@@ -3,7 +3,7 @@ package hdpf
 import hdpf.bean.{Device, Message, Participant, Payload}
 import hdpf.operator.{AllWindowApply, IsInPloyin}
 import hdpf.utils.FlinkUtils
-import hdpf.watermark.StrategyWaterMark
+import hdpf.watermark.{AssginerWaterMark, StrategyWaterMark}
 import org.apache.flink.api.common.eventtime.WatermarkStrategy
 import org.apache.flink.api.scala._
 import org.apache.flink.streaming.api.scala.DataStream
@@ -24,8 +24,9 @@ object App {
     val kafkaDataStream: DataStream[String] = env.addSource(consumer)
     val canalDs = kafkaDataStream.map(json => Message(json))
     //添加水印
-    val strategy: WatermarkStrategy[Message] = WatermarkStrategy.forBoundedOutOfOrderness[Message](Duration.ofSeconds(20)).withTimestampAssigner(new StrategyWaterMark)
-    val waterDs: DataStream[Message] = canalDs.assignTimestampsAndWatermarks(strategy)
+//    val strategy: WatermarkStrategy[Message] = WatermarkStrategy.forBoundedOutOfOrderness[Message](Duration.ofSeconds(20)).withTimestampAssigner(new StrategyWaterMark)
+//    val waterDs: DataStream[Message] = canalDs.assignTimestampsAndWatermarks(WatermarkStrategy.forBoundedOutOfOrderness[Message](Duration.ofSeconds(20)).withTimestampAssigner(new StrategyWaterMark))
+    val waterDs: DataStream[Message] = canalDs.assignTimestampsAndWatermarks(new AssginerWaterMark)
     //链
     val payloadDS: DataStream[Payload] = waterDs.map(message => Payload(message.payload))
     val deviceDS: DataStream[Array[Device]] = payloadDS.map(_.device_data)

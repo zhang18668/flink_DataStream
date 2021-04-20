@@ -1,11 +1,7 @@
 package hdpf.bean
 
 
-import com.alibaba.fastjson.{JSON, JSONObject}
-import java.lang.Boolean
-
-import com.sun.jmx.snmp.Timestamp
-import hdpf.bean.{Arctan, Location, Pose}
+import com.alibaba.fastjson.JSON
 
 case class Participant(
                      var `type`: String,

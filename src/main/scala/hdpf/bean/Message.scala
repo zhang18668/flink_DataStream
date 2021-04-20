@@ -1,10 +1,8 @@
 package hdpf.bean
 
 
-import com.alibaba.fastjson.{JSON, JSONObject}
-import java.lang.Boolean
+import com.alibaba.fastjson.JSON
 
-import hdpf.bean.Device
 
 case class Message(
                     var vhost: String,
