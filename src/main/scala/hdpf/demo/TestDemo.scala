@@ -1,16 +1,18 @@
-package hdpf
+package hdpf.demo
 
 import hdpf.bean.{Device, Message, Participant, Payload}
 import hdpf.operator.{AllWindowApply, IsInPloyin}
 import hdpf.utils.FlinkUtils
 import org.apache.flink.api.scala._
 import org.apache.flink.streaming.api.functions.AssignerWithPeriodicWatermarks
-import org.apache.flink.streaming.api.scala.DataStream
+import org.apache.flink.streaming.api.scala.function.AllWindowFunction
+import org.apache.flink.streaming.api.scala.{AllWindowedStream, DataStream}
 import org.apache.flink.streaming.api.watermark.Watermark
 import org.apache.flink.streaming.api.windowing.assigners.{SlidingProcessingTimeWindows, TumblingEventTimeWindows}
 import org.apache.flink.streaming.api.windowing.time.Time
+import org.apache.flink.streaming.api.windowing.windows.TimeWindow
 
-object App {
+object TestDemo {
 
   def main(args: Array[String]): Unit = {
     // Flink流式环境的创建
@@ -53,9 +55,10 @@ object App {
     val arrFilter: DataStream[Participant] = parDS.filter(new IsInPloyin)
     val winDS: DataStream[Int] = arrFilter.windowAll(SlidingProcessingTimeWindows.of(Time.seconds(60),Time.seconds(10))).apply(new AllWindowApply)
 
+//    arrFilter.timeWindowAll()
+      //    ds.timeWindowAll(Time.seconds(4),Time.seconds(8))
 
-
-    // 执行任务
-    env.execute("sync-db")
+      // 执行任务
+      env.execute("sync-db")
   }
 }
