@@ -11,7 +11,7 @@ object DataSource_txt {
     // 1. 流处理环境
     val env = StreamExecutionEnvironment.getExecutionEnvironment
     // 2. 读取HDFS中的CSV文件
-    val csvDataStream: DataStream[String] = env.readTextFile("D:\\flink\\flinkDemo\\src\\main\\resources\\data.txt")
+    val csvDataStream: DataStream[String] = env.readTextFile("E:\\Flink\\flink_DataStream\\src\\main\\resources\\data.txt")
     //  5. 构建`FlinkKafkaProducer010`
     val kafkaCluster = "cdh04:9092,cdh07:9092,cdh08:9092"
     val flinkKafkaProducer011= new FlinkKafkaProducer[String](kafkaCluster,"hdpf", new SimpleStringSchema())
