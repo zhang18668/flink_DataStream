@@ -3,12 +3,16 @@ package hdpf
 import hdpf.bean.{Device, Message, Participant, Payload}
 import hdpf.operator.{AllWindowApply, IsInPloyin}
 import hdpf.utils.FlinkUtils
+import hdpf.watermark.{AssginerWaterMark, StrategyWaterMark}
+import javafx.util.Duration
+import org.apache.flink.api.common.eventtime.WatermarkStrategy
 import org.apache.flink.api.scala._
-import org.apache.flink.streaming.api.functions.AssignerWithPeriodicWatermarks
 import org.apache.flink.streaming.api.scala.DataStream
 import org.apache.flink.streaming.api.watermark.Watermark
 import org.apache.flink.streaming.api.windowing.assigners.{SlidingProcessingTimeWindows, TumblingEventTimeWindows}
 import org.apache.flink.streaming.api.windowing.time.Time
+import java.time.Duration
+
 
 object App {
 
@@ -16,35 +20,14 @@ object App {
     // Flink流式环境的创建
     val env = FlinkUtils.initFlinkEnv()
 
-    // 整合Kafka
-    val consumer = FlinkUtils.initKafkaFlink()
+    // 整合Kafk
 
-    // 测试打印
+    val consumer = FlinkUtils.initKafkaFlink()
     val kafkaDataStream: DataStream[String] = env.addSource(consumer)
     val canalDs = kafkaDataStream.map(json => Message(json))
-    canalDs.print()
-
-    val waterDs: DataStream[Message] = canalDs.assignTimestampsAndWatermarks(new AssignerWithPeriodicWatermarks[Message] {
-
-      // 当前的时间戳
-      var currentTimestamp = 0L
-
-      // 延迟的时间
-      val delayTime = 2000l
-
-      // 返回水印时间
-      override def getCurrentWatermark: Watermark = {
-        new Watermark(currentTimestamp - delayTime)
-      }
-
-      // 比较当前元素的时间和上一个元素的时间,取最大值,防止时光倒流
-      override def extractTimestamp(element: Message, previousElementTimestamp: Long): Long = {
-        var time = Payload(element.payload).time.toLong
-        currentTimestamp = Math.max(time, previousElementTimestamp)
-        currentTimestamp
-      }
-    })
-
+    //添加水印
+    val waterDs: DataStream[Message] = canalDs.assignTimestampsAndWatermarks(WatermarkStrategy.forBoundedOutOfOrderness[Message](java.time.Duration.ofSeconds(20)).withTimestampAssigner(new StrategyWaterMark))
+    //链
     val payloadDS: DataStream[Payload] = waterDs.map(message => Payload(message.payload))
     val deviceDS: DataStream[Array[Device]] = payloadDS.map(_.device_data)
     val devDS: DataStream[Device] = deviceDS.flatMap(x => x)
