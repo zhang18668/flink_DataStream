@@ -1,7 +1,7 @@
 package hdpf.operator
 
 import hdpf.bean.Participant
-import org.apache.flink.api.common.functions.FilterFunction
+import org.apache.flink.api.common.functions.RichFilterFunction
 
 //算法
 case class Point(var x: Double, var y: Double) {
@@ -9,9 +9,9 @@ case class Point(var x: Double, var y: Double) {
 }
 
 /**
- * 判断点是否在多边形内部
- */
-class IsInPloyin extends FilterFunction[Participant] {
+  * 判断点是否在多边形内部
+  */
+class IsInPloyin extends RichFilterFunction[Participant] {
   override def filter(value: Participant): Boolean = {
     val p = Point(value.location.longitude, value.location.latitude)
     val pts = List(Point(114.0717, 30.44909), Point(114.0717, 30.44910), Point(114.0722, 30.44909), Point(114.0722, 30.44910))
