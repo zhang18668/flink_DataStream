@@ -14,7 +14,7 @@ case class Point(var x: Double, var y: Double) {
 class IsInPloyin extends RichFilterFunction[Participant] {
   override def filter(value: Participant): Boolean = {
     val p = Point(value.location.longitude, value.location.latitude)
-    val pts = List(Point(114.0717, 30.44909), Point(114.0717, 30.44910), Point(114.0722, 30.44909), Point(114.0722, 30.44910))
+    val pts = List(Point(121.612389396, 29.2522492584), Point(121.612510129, 36.2522890327), Point(111.612447139, 29.2524009617), Point(111.612350552, 36.2523838254))
 
     var intersection = 0
     for (i <- pts.indices) {
