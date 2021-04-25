@@ -63,7 +63,7 @@ object App {
     //    devMapDS.print("devMapDS")
     val parDS: DataStream[Participant] = devMapDS.flatMap(y => y)
     //    parDS.print("parDS")
-    val arrFilter: DataStream[Participant] = parDS.filter(x => true)
+    val arrFilter: DataStream[Participant] = parDS.filter(new IsInPloyin)
     arrFilter.print("arr")
     val winDS = parDS.windowAll(SlidingProcessingTimeWindows.of(Time.seconds(10), Time.seconds(5))).apply(new AllWindowApply)
 //    winDS.addSink(new MySqlSink)

@@ -3,6 +3,7 @@ package hdpf.sink
 import java.sql.{Connection, DriverManager, PreparedStatement}
 
 import hdpf.bean.{Canal, Statistics}
+import hdpf.utils.GlobalConfigUtil
 import org.apache.flink.api.scala._
 import org.apache.flink.configuration.Configuration
 import org.apache.flink.streaming.api.datastream.DataStreamSink
@@ -17,9 +18,9 @@ object Sink_MySql {
     val env = StreamExecutionEnvironment.getExecutionEnvironment
     // 2. load list
     val listDataSet: DataStream[Statistics] = env.fromCollection(List(
-      Statistics( "dazhuang", "123456", 48),
-      Statistics( "erya", "123456", 50),
-      Statistics( "sanpang", "123456", 60)
+      Statistics("dazhuang", "123456", 48),
+      Statistics("erya", "123456", 50),
+      Statistics("sanpang", "123456", 60)
     ))
 
     listDataSet.print()
@@ -40,9 +41,9 @@ class MySqlSink extends RichSinkFunction[Statistics] {
   override def open(parameters: Configuration): Unit = {
 
     // 1. 加载MySql驱动
-    Class.forName("com.mysql.jdbc.Driver")
+    Class.forName(GlobalConfigUtil.mysql_driver)
     // 2. 创建连接
-    var connection = DriverManager.getConnection("jdbc:mysql://172.31.240.79:3306/hdpf", "cmcc", "cmcc2020")
+    var connection = DriverManager.getConnection(GlobalConfigUtil.msyql_url, GlobalConfigUtil.msyql_user, GlobalConfigUtil.msyql_password)
     // 3. 创建PreparedStatement
     val sql = "insert into statistics(startTime,endTime,result) values(?,?,?)"
     ps = connection.prepareStatement(sql)
@@ -51,7 +52,7 @@ class MySqlSink extends RichSinkFunction[Statistics] {
   override def invoke(value: Statistics): Unit = {
     println("SQL执行")
     // 执行插入
-    ps.setString(1,value.startTime)
+    ps.setString(1, value.startTime)
     ps.setString(2, value.endTime)
     ps.setInt(3, value.result)
 

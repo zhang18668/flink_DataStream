@@ -15,7 +15,17 @@ object GlobalConfigUtil {
   val enableAutoCommit = config.getString("enable.auto.commit")
   val autoCommitIntervalMs = config.getString("auto.commit.interval.ms")
   val autoOffsetReset = config.getString("auto.offset.reset")
+ //mysql 配置
+  val mysql_driver: String = config.getString("mysql_driver")
+  val msyql_url: String = config.getString("msyql_url")
+  val msyql_user: String = config.getString("msyql_user")
+  val msyql_password: String = config.getString("msyql_passwd")
 
+  //时间窗口配置
+
+  val windowDuration: Int = config.getInt("window.duration")
+  val windowTimeStep: Int = config.getInt("window.time.step")
+  val jobName: String = config.getString("flink.job.name")
 
   def main(args: Array[String]): Unit = {
     println(bootstrapServers)

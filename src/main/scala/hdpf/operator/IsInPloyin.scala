@@ -25,7 +25,7 @@ class IsInPloyin extends FilterFunction[Participant] {
     def getPoint: Point = Point.apply(x, y)
   }
   override def filter(value: Participant): Boolean = {
-    var flag=false
+    var flag=true
     val p = Point(value.location.longitude, value.location.latitude)
     val pts = List(Point(121.612389396, 31.2522492584), Point(121.612510129, 31.2522890327), Point(121.612447139, 31.2524226077), Point(121.612350552, 31.2523838254))
 
@@ -39,7 +39,17 @@ class IsInPloyin extends FilterFunction[Participant] {
         if (((p.y - p1.y) * (p2.x - p1.x) / (p2.y - p1.y) + p1.x) < p.x)
           intersection += 1
     }
-    if (intersection % 2 == 1) flag=true
+    if (intersection % 2 == 1) {
+      println(value.location)
+
+
+      flag=true
+    }
+
+    else{
+      flag=false
+      println("false:"+value.location)
+    }
     flag
   }
 }
