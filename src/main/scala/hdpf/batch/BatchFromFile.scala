@@ -50,10 +50,6 @@ object BatchFromFile {
         for (dev <- devices) {
           var objects: Array[Participant] = dev.`object`
           for (obj <- objects) {
-            //            println(obj)
-            //            println("speed:"+obj.speed)
-
-            //            println("latitude:"+obj.location.latitude)
             var p = Point(obj.location.longitude, obj.location.latitude)
             val i = isInPloyin(p, list)
             println("longitude:" + obj.location.longitude + "latitude:" + obj.location.latitude + "在不在:====" + i)

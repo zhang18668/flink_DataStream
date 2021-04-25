@@ -11,8 +11,8 @@ case class Participant(
                      var location: Location,
                      var arctan: Arctan,
                      var conf: Double,
-                     var speed: Double,
-                     var timestamp: Long
+                     var speed: Double
+//                     var timestamp: String
                    )
 
 object Participant {

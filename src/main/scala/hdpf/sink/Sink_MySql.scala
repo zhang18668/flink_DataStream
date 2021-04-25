@@ -2,9 +2,10 @@ package hdpf.sink
 
 import java.sql.{Connection, DriverManager, PreparedStatement}
 
-import hdpf.bean.Canal
+import hdpf.bean.{Canal, Statistics}
 import org.apache.flink.api.scala._
 import org.apache.flink.configuration.Configuration
+import org.apache.flink.streaming.api.datastream.DataStreamSink
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction
 import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
 
@@ -15,16 +16,15 @@ object Sink_MySql {
     // 1. env
     val env = StreamExecutionEnvironment.getExecutionEnvironment
     // 2. load list
-    val listDataSet: DataStream[(Int, String, String, String)] = env.fromCollection(List(
-      (10, "dazhuang", "123456", "大壮"),
-      (11, "erya", "123456", "二丫"),
-      (12, "sanpang", "123456", "三胖")
+    val listDataSet: DataStream[Statistics] = env.fromCollection(List(
+      Statistics( "dazhuang", "123456", 48),
+      Statistics( "erya", "123456", 50),
+      Statistics( "sanpang", "123456", 60)
     ))
 
-
+    listDataSet.print()
     // 3. add sink
-    listDataSet.addSink(list =>new MySqlSink)
-
+    listDataSet.addSink(new MySqlSink)
     // 4. execute
     env.execute()
 
@@ -32,8 +32,7 @@ object Sink_MySql {
 
 }
 
-class MySqlSink extends RichSinkFunction[Canal] {
-
+class MySqlSink extends RichSinkFunction[Statistics] {
 
   var connection: Connection = null;
   var ps: PreparedStatement = null;
@@ -43,19 +42,18 @@ class MySqlSink extends RichSinkFunction[Canal] {
     // 1. 加载MySql驱动
     Class.forName("com.mysql.jdbc.Driver")
     // 2. 创建连接
-    connection = DriverManager.getConnection("jdbc:mysql:///test", "root", "123456")
+    var connection = DriverManager.getConnection("jdbc:mysql://172.31.240.79:3306/hdpf", "cmcc", "cmcc2020")
     // 3. 创建PreparedStatement
-    val sql = "insert into user(id,username,password,name) values(?,?,?,?)"
+    val sql = "insert into statistics(startTime,endTime,result) values(?,?,?)"
     ps = connection.prepareStatement(sql)
   }
 
-  override def invoke(value: Canal): Unit = {
-
+  override def invoke(value: Statistics): Unit = {
+    println("SQL执行")
     // 执行插入
-    ps.setLong(1,value.emptyCount)
-    ps.setString(2,value.logFileName)
-    ps.setString(3,value.dbName)
-    ps.setLong(4,value.logFileOffset)
+    ps.setString(1,value.startTime)
+    ps.setString(2, value.endTime)
+    ps.setInt(3, value.result)
 
     ps.executeUpdate()
   }
@@ -63,10 +61,10 @@ class MySqlSink extends RichSinkFunction[Canal] {
 
   override def close(): Unit = {
     // 关闭连接
-    if(connection!=null){
+    if (connection != null) {
       connection.close()
     }
-    if(ps!=null){
+    if (ps != null) {
       ps.close()
     }
   }
