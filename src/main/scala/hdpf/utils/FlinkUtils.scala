@@ -4,12 +4,10 @@ import java.util.Properties
 
 import org.apache.flink.api.common.serialization.SimpleStringSchema
 import org.apache.flink.runtime.state.filesystem.FsStateBackend
-import org.apache.flink.streaming.api.{CheckpointingMode, TimeCharacteristic}
 import org.apache.flink.streaming.api.environment.CheckpointConfig
+import org.apache.flink.streaming.api.{CheckpointingMode, TimeCharacteristic}
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer
-import org.apache.kafka.clients.consumer.ConsumerConfig
-import org.apache.kafka.common.serialization.StringDeserializer
 
 object FlinkUtils {
 
@@ -17,8 +15,8 @@ object FlinkUtils {
   def initFlinkEnv()={
     val env = StreamExecutionEnvironment.getExecutionEnvironment
     // 设置env的处理时间为EventTime
-//    env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
-    env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime)
+    env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
+//    env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime)
     //  设置并行度
     env.setParallelism(3)
 //
@@ -37,7 +35,10 @@ object FlinkUtils {
 //    env.getCheckpointConfig.enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION)
 //    // 设置检查点在hdfs中存储的位置
 //    env.setStateBackend(new FsStateBackend("hdfs://cdh01:8020/flink-checkpoint"))
-//    env.setStateBackend(new FsStateBackend("D:\\flink\\flink_DataStream\\src\\main\\data"))
+
+
+
+    //    env.setStateBackend(new FsStateBackend("D:\\flink\\flink_DataStream\\src\\main\\data"))
 
     env
   }

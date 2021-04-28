@@ -20,7 +20,7 @@ object GlobalConfigUtil {
   val msyql_url: String = config.getString("msyql_url")
   val msyql_user: String = config.getString("msyql_user")
   val msyql_password: String = config.getString("msyql_passwd")
-
+  val tablename=config.getString("tablename")
   //时间窗口配置
 
   val windowDuration: Int = config.getInt("window.duration")

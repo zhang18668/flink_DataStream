@@ -45,7 +45,8 @@ class MySqlSink extends RichSinkFunction[Statistics] {
     // 2. 创建连接
     var connection = DriverManager.getConnection(GlobalConfigUtil.msyql_url, GlobalConfigUtil.msyql_user, GlobalConfigUtil.msyql_password)
     // 3. 创建PreparedStatement
-    val sql = "insert into statistics(startTime,endTime,result) values(?,?,?)"
+    val tablename=GlobalConfigUtil.tablename
+    val sql = "insert into "+tablename+"(startTime,endTime,result) values(?,?,?)"
     ps = connection.prepareStatement(sql)
   }
 
