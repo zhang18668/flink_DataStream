@@ -18,23 +18,23 @@ object FlinkUtils {
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
 //    env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime)
     //  设置并行度
-    env.setParallelism(3)
+//    env.setParallelism(3)
 //
-//    // 设置checkpoint
-//    // 开启checkpoint,间隔时间为5s
-//    env.enableCheckpointing(5000)
-//    // 设置处理模式
-//    env.getCheckpointConfig.setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE)
-////    // 设置两次checkpoint的间隔
-//    env.getCheckpointConfig.setMinPauseBetweenCheckpoints(1000)
-////    // 设置超时时长
-//    env.getCheckpointConfig.setCheckpointTimeout(60000)
-//    // 设置并行度
-//    env.getCheckpointConfig.setMaxConcurrentCheckpoints(1)
-//    // 当程序关闭的时候,触发额外的checkpoint
-//    env.getCheckpointConfig.enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION)
-//    // 设置检查点在hdfs中存储的位置
-//    env.setStateBackend(new FsStateBackend("hdfs://cdh01:8020/flink-checkpoint"))
+    // 设置checkpoint
+    // 开启checkpoint,间隔时间为5s
+    env.enableCheckpointing(5000)
+    // 设置处理模式
+    env.getCheckpointConfig.setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE)
+    // 设置两次checkpoint的间隔
+    env.getCheckpointConfig.setMinPauseBetweenCheckpoints(1000)
+    // 设置超时时长
+    env.getCheckpointConfig.setCheckpointTimeout(60000)
+    // 设置并行度
+    env.getCheckpointConfig.setMaxConcurrentCheckpoints(1)
+    // 当程序关闭的时候,触发额外的checkpoint
+    env.getCheckpointConfig.enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION)
+    // 设置检查点在hdfs中存储的位置
+    env.setStateBackend(new FsStateBackend("hdfs://cdh01:8020/flink-checkpoint"))
 
 
 
