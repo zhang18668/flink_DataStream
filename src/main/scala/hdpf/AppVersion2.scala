@@ -26,7 +26,7 @@ object AppVersion2 {
     // 整合Kafka
     val consumer = FlinkUtils.initKafkaFlink()
     val kafkaDataStream: DataStream[String] = env.addSource(consumer)
-    kafkaDataStream.print("kafkaDataStream")
+//    kafkaDataStream.print("kafkaDataStream")
     val canalDs = kafkaDataStream.map {
       json => {
         var mes = new Payload(null, null, null)
@@ -34,14 +34,14 @@ object AppVersion2 {
           mes = Payload(json)
         }
         catch {
-          case e: Exception => hdpfLogger.error("解析错误被舍弃!")
+          case e: Exception => hdpfLogger.error("解析错误被舍弃!"+e.toString)
         }
         mes
       }
     }
-    //    canalDs.print("canalDs")
+//    canalDs.print("canalDs")
     val messagesDS = canalDs.filter(mes => if (mes.version == null || mes.time == null) false else true)
-    //        messagesDS.print("ds")
+    messagesDS.print("ds")
     //添加水印
     //        val waterDs: WatermarkStrategy[Payload] = WatermarkStrategy.forBoundedOutOfOrderness[Payload](Duration.ofSeconds(20)).withTimestampAssigner(new StrategyWaterMark)
     //    val waterDs: DataStream[Message] = canalDs.assignTimestampsAndWatermarks(WatermarkStrategy.forBoundedOutOfOrderness[Message](Duration.ofSeconds(20)).withTimestampAssigner(new SerializableTimestampAssigner[Message] {
@@ -62,6 +62,7 @@ object AppVersion2 {
     val winDS: DataStream[Statistics] = arrFilter.windowAll(SlidingEventTimeWindows.of(Time.seconds(GlobalConfigUtil.windowDuration), Time.seconds(GlobalConfigUtil.windowTimeStep))).apply(new AllWindowApply)
 
     winDS.addSink(new MySqlSink)
+    //    winDS.addSink()
 
     // 执行任务
     env.execute(GlobalConfigUtil.jobName)

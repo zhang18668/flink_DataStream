@@ -1,5 +1,4 @@
-package hdpf.bean
-
+package hdpfMQ.bean
 
 import com.alibaba.fastjson.JSON
 
@@ -11,8 +10,8 @@ case class Participant(
                      var location: Location,
                      var arctan: Arctan,
                      var conf: Double,
-                     var speed: Double,
-                     var timestamp: String
+                     var speed: Double
+//                     var timestamp: String
                    )
 
 object Participant {

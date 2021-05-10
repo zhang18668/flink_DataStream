@@ -13,6 +13,9 @@ import org.apache.flink.streaming.api.TimeCharacteristic
 import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
 import org.apache.flink.streaming.api.windowing.assigners.SlidingProcessingTimeWindows
 import org.apache.flink.streaming.api.windowing.time.Time
+import org.apache.flink.streaming.connectors.rabbitmq.RMQSource
+import org.apache.flink.streaming.connectors.rabbitmq.common.RMQConnectionConfig
+import org.apache.flink.streaming.util.serialization.SimpleStringSchema
 import org.slf4j.LoggerFactory
 
 
@@ -20,47 +23,32 @@ object App {
 
   def main(args: Array[String]): Unit = {
 //    val hdpfLogger = LoggerFactory.getLogger("hdpf")
-    // Flink流式环境的创建
+    //TODO 1. Flink流式环境的创建
     val env = FlinkUtils.initFlinkEnv()
 
-    // 整合Kafka
-    val consumer = FlinkUtils.initKafkaFlink()
-    val kafkaDataStream: DataStream[String] = env.addSource(consumer)
-    kafkaDataStream.print("kafkaDataStream")
-//    val canalDs = kafkaDataStream.map {
-//      json => {
-//        var mes = new Payload(null, null, null)
-//        try {
-//          mes = Payload(json)
-//        }
-//        catch {
-//          case e: Exception => hdpfLogger.error("解析错误被舍弃!")
-//        }
-//        mes
-//      }
-//    }
-//    //    canalDs.print("canalDs")
-//    val messagesDS = canalDs.filter(mes => if (mes.version == null || mes.time == null) false else true)
-//    //        messagesDS.print("ds")
-    //添加水印
-    //        val waterDs: WatermarkStrategy[Payload] = WatermarkStrategy.forBoundedOutOfOrderness[Payload](Duration.ofSeconds(20)).withTimestampAssigner(new StrategyWaterMark)
-    //    val waterDs: DataStream[Message] = canalDs.assignTimestampsAndWatermarks(WatermarkStrategy.forBoundedOutOfOrderness[Message](Duration.ofSeconds(20)).withTimestampAssigner(new SerializableTimestampAssigner[Message] {
-    //    override def extractTimestamp(element: Message, recordTimestamp: Long): Long = Payload(element.payload).time.toLong
-    //  }))
-//    val waterDs: DataStream[Payload] = messagesDS.assignTimestampsAndWatermarks(new AssginerWaterMarkVersion2)
-//    //链
-//    //    waterDs.print("waterDs")
-//    val deviceDS: DataStream[Array[Device]] = waterDs.map(_.device_data)
-//    //    deviceDS.print("deviceDS")
-//    val devDS: DataStream[Device] = deviceDS.flatMap(x => x)
-//    val devMapDS: DataStream[Array[Participant]] = devDS.map(_.`object`)
-//    //    devMapDS.print("devMapDS")
-//    val parDS: DataStream[Participant] = devMapDS.flatMap(x => x)
-//    //    parDS.print("parDS")
-//    val arrFilter: DataStream[Participant] = parDS.filter(new IsInPloyin)
-//    arrFilter.print("arr")
-//    val winDS: DataStream[Statistics] = arrFilter.windowAll(SlidingProcessingTimeWindows.of(Time.seconds(GlobalConfigUtil.windowDuration), Time.seconds(GlobalConfigUtil.windowTimeStep))).apply(new AllWindowApply)
-//
+    // TODO 2. 整合MQ
+    val connectionConfig = new RMQConnectionConfig.Builder()
+      .setHost("172.31.240.139")
+      .setPort(5672)
+      .setVirtualHost("ord-ft")
+      .setUserName("fds-ft")
+      .setPassword("Fds-ft@2020")
+      //      .setConnectionTimeout(10000)
+      //      .setAutomaticRecovery(true)
+      //      .setNetworkRecoveryInterval(10000)
+      .build
+
+    val stream = env
+      .addSource(new RMQSource[String](
+        connectionConfig,            // config for the RabbitMQ connection
+        "ord-obu-data-temp-zzh",                // name of the RabbitMQ queue to consume
+        false,                        // use correlation ids; can be false if only at-least-once is required
+        new SimpleStringSchema))     // deserialization schema to turn messages into Java objects
+      .setParallelism(1)               // non-parallel source is only required for exactly-once
+//TODO 3.transform
+    stream.print()
+//TODO 4.sink
+
 //    winDS.addSink(new MySqlSink)
 
     // 执行任务

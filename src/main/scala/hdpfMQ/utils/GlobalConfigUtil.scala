@@ -1,4 +1,4 @@
-package hdpf.utils
+package hdpfMQ.utils
 
 import com.typesafe.config.{Config, ConfigFactory}
 
@@ -21,7 +21,6 @@ object GlobalConfigUtil {
   val msyql_user: String = config.getString("msyql_user")
   val msyql_password: String = config.getString("msyql_passwd")
   val tablename=config.getString("tablename")
-  val queuelength=config.getString("queuelength")
   //时间窗口配置
 
   val windowDuration: Int = config.getInt("window.duration")
