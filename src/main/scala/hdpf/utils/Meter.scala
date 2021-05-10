@@ -1,5 +1,4 @@
-package hdpf.operator
-
+package hdpf.utils
 
 /**
   * 计算GPS经纬度 俩点之间的直线距离

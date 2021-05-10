@@ -1,4 +1,4 @@
-package hdpf.operator
+package hdpf.operator.fitter
 
 import hdpf.bean.Participant
 import org.apache.flink.api.common.functions.FilterFunction

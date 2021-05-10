@@ -1,4 +1,4 @@
-package hdpf.operator
+package hdpf.operator.window
 
 import java.text.SimpleDateFormat
 import java.util.Date

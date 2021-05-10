@@ -1,10 +1,11 @@
-package hdpfMQ
+package hdpf.task
 
 import hdpf.utils.FlinkUtils
+import org.apache.flink.api.scala._
 import org.apache.flink.streaming.connectors.rabbitmq.RMQSource
 import org.apache.flink.streaming.connectors.rabbitmq.common.RMQConnectionConfig
 import org.apache.flink.streaming.util.serialization.SimpleStringSchema
-import org.apache.flink.streaming.api.scala._
+
 
 object App {
 
@@ -20,19 +21,20 @@ object App {
       .setVirtualHost("ord-ft")
       .setUserName("fds-ft")
       .setPassword("Fds-ft@2020")
+      //      .setConnectionTimeout(10000)
+      //      .setAutomaticRecovery(true)
+      //      .setNetworkRecoveryInterval(10000)
       .build
 
     val stream = env
       .addSource(new RMQSource[String](
-        connectionConfig,
-        "ord-roadside-fusion-result-zzh",
-        false,
-        new SimpleStringSchema))
-      .setParallelism(1)
-
-//TODO 3.transform 排队长度 包括绿灯启亮时刻排队长度、红灯启亮时刻排队长度、周期平均排队长度等
-
-    stream.print("hah")
+        connectionConfig,            // config for the RabbitMQ connection
+        "ord-obu-data-temp-zzh",                // name of the RabbitMQ queue to consume
+        false,                        // use correlation ids; can be false if only at-least-once is required
+        new SimpleStringSchema))     // deserialization schema to turn messages into Java objects
+      .setParallelism(1)               // non-parallel source is only required for exactly-once
+//TODO 3.transform
+    stream.print()
 //TODO 4.sink
 
 //    winDS.addSink(new MySqlSink)

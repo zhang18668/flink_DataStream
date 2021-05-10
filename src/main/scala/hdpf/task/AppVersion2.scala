@@ -1,17 +1,14 @@
-package hdpf
+package hdpf.task
 
-import java.time.Duration
-
-import hdpf.bean.{Device, Message, Participant, Payload, Statistics}
-import hdpf.operator.{AllWindowApply, IsInPloyin}
+import hdpf.bean.{Device, Participant, Payload, Statistics}
+import hdpf.operator.fitter.IsInPloyin
+import hdpf.operator.window.AllWindowApply
 import hdpf.sink.MySqlSink
 import hdpf.utils.{FlinkUtils, GlobalConfigUtil}
-import hdpf.watermark.{AssginerWaterMark, AssginerWaterMarkVersion2, StrategyWaterMark}
-import org.apache.flink.api.common.eventtime.WatermarkStrategy
+import hdpf.watermark.AssginerWaterMarkVersion2
 import org.apache.flink.api.scala._
-import org.apache.flink.streaming.api.TimeCharacteristic
-import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
-import org.apache.flink.streaming.api.windowing.assigners.{SlidingEventTimeWindows, SlidingProcessingTimeWindows}
+import org.apache.flink.streaming.api.scala.DataStream
+import org.apache.flink.streaming.api.windowing.assigners.SlidingEventTimeWindows
 import org.apache.flink.streaming.api.windowing.time.Time
 import org.slf4j.LoggerFactory
 

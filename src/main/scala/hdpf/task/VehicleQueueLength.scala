@@ -1,14 +1,9 @@
-package hdpf
+package hdpf.task
 
-import hdpf.bean.{Device, Participant, Payload, Statistics}
-import hdpf.operator.{AllWindowApply, IsInLane01}
-import hdpf.sink.MySqlSink
+import hdpf.bean.{Device, Participant, Payload}
 import hdpf.utils.{FlinkUtils, GlobalConfigUtil}
-import hdpf.watermark.{AssginerWaterMark, AssginerWaterMarkVersion2}
 import org.apache.flink.api.scala._
 import org.apache.flink.streaming.api.scala.DataStream
-import org.apache.flink.streaming.api.windowing.assigners.SlidingEventTimeWindows
-import org.apache.flink.streaming.api.windowing.time.Time
 import org.slf4j.LoggerFactory
 
 
