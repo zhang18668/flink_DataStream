@@ -1,6 +1,8 @@
 package hdpf.task
 
-import hdpf.bean.{Device, Participant, Payload}
+import hdpf.bean.{Device, Participant, Payload, QueueLength}
+import hdpf.operator.map.QueueLengthFunction
+import hdpf.sink.MySqlQueueLengthSink
 import hdpf.utils.{FlinkUtils, GlobalConfigUtil}
 import org.apache.flink.api.scala._
 import org.apache.flink.streaming.api.scala.DataStream
@@ -17,7 +19,7 @@ object VehicleQueueLength {
     //TODO 整合Kafka
     val consumer = FlinkUtils.initKafkaFlink()
     val kafkaDataStream: DataStream[String] = env.addSource(consumer)
-    kafkaDataStream.print("kafkaDataStream")
+//    kafkaDataStream.print("kafkaDataStream")
 
     val canalDs = kafkaDataStream.map {
       json => {
@@ -32,21 +34,17 @@ object VehicleQueueLength {
       }
     }
     //    canalDs.print("canalDs")
-    val messagesDS: DataStream[Payload] = canalDs.filter(mes => if (mes.version == null || mes.time == null) false else true)
+    val messagesDS: DataStream[Payload] = canalDs.filter(mes => if (mes.version == null || mes.time == null||mes.device_data==null) false else true)
     //    waterDs.print("waterDs")
-    val deviceDS: DataStream[(Device, String)] = messagesDS.flatMap(x => x.device_data.map(y => (y, x.time)))
-    //    deviceDS.print("deviceDS")
-    val participantDS: DataStream[(Participant, String)] = deviceDS.flatMap(x => x._1.`object`.map(y => (y, x._2)))
-//    val parDS: DataStream[Participant] = participantDS.map(x => new Participant(x._1.`type`, x._1.license_plate, x._1.id, x._1.pose, x._1.location, x._1.arctan, x._1.conf, x._1.speed, x._2))
-    //    parDS.print("parDS")
-//    val parWaterDS = parDS.assignTimestampsAndWatermarks(new AssginerWaterMark)
-//    val parSpeedDS = parDS.filter(_.speed == 0)
-//    val arrFilter: DataStream[Participant] = parSpeedDS.filter(new IsInLane01)
-//    arrFilter.print("arr")
-
-//    winDS.addSink(new MySqlSink)
-    //    winDS.addSink()
-
+    val devTupleDS: DataStream[(Device, String)] = messagesDS.flatMap(x => x.device_data.map(y => (y, x.time)))
+//    返回距离与时间戳DS
+    val distanceDS: DataStream[QueueLength] = devTupleDS.map(new QueueLengthFunction)
+//    distanceDS.print("distance")
+    val queueLenDS = distanceDS.filter(_.queueLength!=0D)
+    queueLenDS.print("queueLenDS")
+    queueLenDS.addSink(new MySqlQueueLengthSink)
+//最后将数据添加到mysql sink
+    //TODO
     // 执行任务
     env.execute(GlobalConfigUtil.jobName)
   }

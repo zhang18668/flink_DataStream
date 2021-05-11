@@ -26,7 +26,7 @@ class AllWindowApply extends AllWindowFunction[Participant, Statistics, TimeWind
     val eventEnd = new Date(end)
     val eventStartStr = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(eventStart)
     val eventEndStr = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(eventEnd)
-    val statistics = Statistics(eventStartStr, eventEndStr, length)
+    val statistics = Statistics(eventStartStr, eventEndStr, length,1)
     print("statistics" + statistics)
     out.collect(statistics)
   }

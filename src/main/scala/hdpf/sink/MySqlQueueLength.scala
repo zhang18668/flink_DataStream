@@ -7,7 +7,7 @@ import hdpf.utils.GlobalConfigUtil
 import org.apache.flink.api.scala._
 import org.apache.flink.configuration.Configuration
 import org.apache.flink.streaming.api.datastream.DataStreamSink
-import org.apache.flink.streaming.api.functions.sink.RichSinkFunction
+import org.apache.flink.streaming.api.functions.sink.{RichSinkFunction, SinkFunction}
 import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
 
 object MySqlQueueLength {
@@ -17,10 +17,10 @@ object MySqlQueueLength {
     // 1. env
     val env = StreamExecutionEnvironment.getExecutionEnvironment
     // 2. load list
-    val listDataSet: DataStream[QueueLength] = env.fromCollection(List(
-      QueueLength("asdasd", 48.1),
-      QueueLength("12345", 50),
-      QueueLength("123456", 60)
+    val listDataSet = env.fromCollection(List(
+      QueueLength("1620703103515", 48.1D,1),
+      QueueLength("1620703103316", 50D,2),
+      QueueLength("1620703104211", 60D,3)
     ))
 
     listDataSet.print()
@@ -46,7 +46,7 @@ class MySqlQueueLengthSink extends RichSinkFunction[QueueLength] {
     var connection = DriverManager.getConnection(GlobalConfigUtil.msyql_url, GlobalConfigUtil.msyql_user, GlobalConfigUtil.msyql_password)
     // 3. 创建PreparedStatement
     val tablename=GlobalConfigUtil.queuelength
-    val sql = "insert into "+tablename+"(timestamp,queueLength) values(?,?)"
+    val sql = "insert into "+tablename+"(timestamp,queueLength,classfiy) values(?,?,?)"
     ps = connection.prepareStatement(sql)
   }
 
@@ -55,10 +55,12 @@ class MySqlQueueLengthSink extends RichSinkFunction[QueueLength] {
     // 执行插入
     ps.setString(1, value.timestamp)
     ps.setDouble(2, value.queueLength)
+    ps.setInt(3, value.classfiy)
 
 
     ps.executeUpdate()
   }
+
 
 
   override def close(): Unit = {

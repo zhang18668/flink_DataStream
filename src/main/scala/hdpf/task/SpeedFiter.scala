@@ -6,14 +6,12 @@ import hdpf.operator.window.AllWindowApply
 import hdpf.sink.MySqlSink
 import hdpf.utils.{FlinkUtils, GlobalConfigUtil}
 import hdpf.watermark.AssginerWaterMarkVersion2
-import org.apache.flink.api.scala._
 import org.apache.flink.streaming.api.scala.DataStream
 import org.apache.flink.streaming.api.windowing.assigners.SlidingEventTimeWindows
 import org.apache.flink.streaming.api.windowing.time.Time
 import org.slf4j.LoggerFactory
-
-
-object AppVersion2 {
+import org.apache.flink.api.scala._
+object SpeedFiter {
 
   def main(args: Array[String]): Unit = {
     val hdpfLogger = LoggerFactory.getLogger("hdpf")
@@ -23,7 +21,7 @@ object AppVersion2 {
     // 整合Kafka
     val consumer = FlinkUtils.initKafkaFlink()
     val kafkaDataStream: DataStream[String] = env.addSource(consumer)
-//    kafkaDataStream.print("kafkaDataStream")
+    //    kafkaDataStream.print("kafkaDataStream")
     val canalDs = kafkaDataStream.map {
       json => {
         var mes = new Payload(null, null, null)
@@ -36,7 +34,7 @@ object AppVersion2 {
         mes
       }
     }
-//    canalDs.print("canalDs")
+    //    canalDs.print("canalDs")
     val messagesDS = canalDs.filter(mes => if (mes.version == null || mes.time == null) false else true)
     messagesDS.print("ds")
     //添加水印
@@ -54,11 +52,9 @@ object AppVersion2 {
     //    devMapDS.print("devMapDS")
     val parDS: DataStream[Participant] = devMapDS.flatMap(x => x)
     //    parDS.print("parDS")
-    val arrFilter: DataStream[Participant] = parDS.filter(new IsInPloyin)
+    val arrFilter: DataStream[Participant] = parDS.filter(_.speed.toInt!=0)
     arrFilter.print("arr")
-    val winDS: DataStream[Statistics] = arrFilter.windowAll(SlidingEventTimeWindows.of(Time.seconds(GlobalConfigUtil.windowDuration), Time.seconds(GlobalConfigUtil.windowTimeStep))).apply(new AllWindowApply)
-
-    winDS.addSink(new MySqlSink)
+//    winDS.addSink(new MySqlSink)
     //    winDS.addSink()
 
     // 执行任务

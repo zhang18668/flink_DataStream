@@ -18,9 +18,9 @@ object Sink_MySql {
     val env = StreamExecutionEnvironment.getExecutionEnvironment
     // 2. load list
     val listDataSet: DataStream[Statistics] = env.fromCollection(List(
-      Statistics("dazhuang", "123456", 48),
-      Statistics("erya", "123456", 50),
-      Statistics("sanpang", "123456", 60)
+      Statistics("dazhuang", "123456", 48,1),
+      Statistics("erya", "123456", 50,1),
+      Statistics("sanpang", "123456", 60,1)
     ))
 
     listDataSet.print()
@@ -46,7 +46,7 @@ class MySqlSink extends RichSinkFunction[Statistics] {
     var connection = DriverManager.getConnection(GlobalConfigUtil.msyql_url, GlobalConfigUtil.msyql_user, GlobalConfigUtil.msyql_password)
     // 3. 创建PreparedStatement
     val tablename=GlobalConfigUtil.tablename
-    val sql = "insert into "+tablename+"(startTime,endTime,result) values(?,?,?)"
+    val sql = "insert into "+tablename+"(startTime,endTime,result,classfiy) values(?,?,?,?)"
     ps = connection.prepareStatement(sql)
   }
 
@@ -56,6 +56,7 @@ class MySqlSink extends RichSinkFunction[Statistics] {
     ps.setString(1, value.startTime)
     ps.setString(2, value.endTime)
     ps.setInt(3, value.result)
+    ps.setInt(4, value.classfiy)
 
     ps.executeUpdate()
   }

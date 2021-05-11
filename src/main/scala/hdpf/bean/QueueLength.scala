@@ -2,7 +2,6 @@ package hdpf.bean
 
 case class QueueLength(
   var timestamp:String,
-  var queueLength:Double
-){
-
-}
+  var queueLength:Double,
+  var classfiy:Int
+)
