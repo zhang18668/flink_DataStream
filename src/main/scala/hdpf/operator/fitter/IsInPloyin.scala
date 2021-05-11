@@ -1,6 +1,6 @@
 package hdpf.operator.fitter
 
-import hdpf.bean.Participant
+import hdpf.bean.source.Participant
 import org.apache.flink.api.common.functions.FilterFunction
 
 

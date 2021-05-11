@@ -3,7 +3,8 @@ package hdpf.operator.window
 import java.text.SimpleDateFormat
 import java.util.Date
 
-import hdpf.bean.{Participant, Statistics}
+import hdpf.bean.sink.Statistics
+import hdpf.bean.source.Participant
 import org.apache.flink.streaming.api.scala.function.AllWindowFunction
 //import org.apache.flink.streaming.api.functions.windowing.AllWindowFunction
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow

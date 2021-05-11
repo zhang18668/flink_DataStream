@@ -1,6 +1,7 @@
 package hdpf.task
 
-import hdpf.bean.{Device, Participant, Payload, Statistics}
+import hdpf.bean.sink.Statistics
+import hdpf.bean.source.{Device, Participant, Payload}
 import hdpf.operator.fitter.IsInPloyin
 import hdpf.operator.window.AllWindowApply
 import hdpf.sink.MySqlSink

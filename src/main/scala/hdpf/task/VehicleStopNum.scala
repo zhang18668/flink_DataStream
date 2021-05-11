@@ -10,7 +10,7 @@ import org.apache.flink.streaming.api.scala.DataStream
 import org.slf4j.LoggerFactory
 
 
-object VehicleQueueLength {
+object VehicleStopNum {
 
   def main(args: Array[String]): Unit = {
     val hdpfLogger = LoggerFactory.getLogger("hdpf")

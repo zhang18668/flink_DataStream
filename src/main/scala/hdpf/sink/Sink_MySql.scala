@@ -2,7 +2,7 @@ package hdpf.sink
 
 import java.sql.{Connection, DriverManager, PreparedStatement}
 
-import hdpf.bean.Statistics
+import hdpf.bean.sink.Statistics
 import hdpf.utils.GlobalConfigUtil
 import org.apache.flink.api.scala._
 import org.apache.flink.configuration.Configuration
@@ -45,7 +45,7 @@ class MySqlSink extends RichSinkFunction[Statistics] {
     // 2. 创建连接
     var connection = DriverManager.getConnection(GlobalConfigUtil.msyql_url, GlobalConfigUtil.msyql_user, GlobalConfigUtil.msyql_password)
     // 3. 创建PreparedStatement
-    val tablename=GlobalConfigUtil.tablename
+    val tablename=GlobalConfigUtil.trafficflow
     val sql = "insert into "+tablename+"(startTime,endTime,result,classfiy) values(?,?,?,?)"
     ps = connection.prepareStatement(sql)
   }

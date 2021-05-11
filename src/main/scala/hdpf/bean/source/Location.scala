@@ -1,7 +1,7 @@
-package hdpf.bean
+package hdpf.bean.source
 
-import com.alibaba.fastjson.{JSON, JSONObject}
-import java.lang.Boolean
+import com.alibaba.fastjson.JSON
+import hdpf.bean.Location
 
 case class Location(
                  var vehicle_judge: String,

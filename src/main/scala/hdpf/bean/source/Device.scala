@@ -1,8 +1,6 @@
-package hdpf.bean
+package hdpf.bean.source
 
-
-import com.alibaba.fastjson.{JSON, JSONObject}
-import java.lang.Boolean
+import com.alibaba.fastjson.JSON
 
 import scala.beans.BeanProperty
 

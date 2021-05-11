@@ -1,5 +1,4 @@
-package hdpf.bean
-
+package hdpf.bean.source
 
 import com.alibaba.fastjson.JSON
 

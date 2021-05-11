@@ -1,9 +1,10 @@
 package hdpf.batch
 
-import hdpf.bean.{Device, Message, Participant, Payload}
+import hdpf.bean.source.{Device, Message, Participant, Payload}
 import org.apache.flink.api.common.functions.MapFunction
 import org.apache.flink.api.scala.{DataSet, ExecutionEnvironment}
 import org.apache.flink.api.scala._
+
 import scala.collection.mutable.Set
 
 object BatchFromFile {

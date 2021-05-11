@@ -1,6 +1,6 @@
-package hdpf.bean
+package hdpf.bean.source
 
-import com.alibaba.fastjson.{JSON, JSONObject}
+import com.alibaba.fastjson.JSON
 
 case class Pose(
                   var length: Double,

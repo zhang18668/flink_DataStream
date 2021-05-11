@@ -1,6 +1,6 @@
 package hdpf.watermark
 
-import hdpf.bean.{Message, Payload}
+import hdpf.bean.source.Payload
 import org.apache.flink.api.common.eventtime.SerializableTimestampAssigner
 
 

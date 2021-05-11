@@ -2,7 +2,7 @@ package hdpf.sink
 
 import java.sql.{Connection, DriverManager, PreparedStatement}
 
-import hdpf.bean.{QueueLength, Statistics}
+import hdpf.bean.sink.{QueueLength, Statistics}
 import hdpf.utils.GlobalConfigUtil
 import org.apache.flink.api.scala._
 import org.apache.flink.configuration.Configuration

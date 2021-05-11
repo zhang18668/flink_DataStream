@@ -1,6 +1,6 @@
 package hdpf.watermark
 
-import hdpf.bean.{Message, Participant, Payload}
+import hdpf.bean.source.{Participant, Payload}
 import org.apache.flink.streaming.api.functions.AssignerWithPeriodicWatermarks
 import org.apache.flink.streaming.api.watermark.Watermark
 

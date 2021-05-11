@@ -1,6 +1,7 @@
 package hdpf.operator.map
 
-import hdpf.bean.{Device, Participant, QueueLength}
+import hdpf.bean.sink.QueueLength
+import hdpf.bean.source.{Device, Participant}
 import hdpf.utils.Meter
 import hdpf.utils.Meter.Point
 import org.apache.flink.api.common.functions.MapFunction

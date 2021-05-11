@@ -1,4 +1,4 @@
-package hdpf.bean
+package hdpf.bean.sink
 
 case class QueueLength(
   var timestamp:String,
