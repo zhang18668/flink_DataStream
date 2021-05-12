@@ -1,7 +1,6 @@
 package hdpf.bean.source
 
 import com.alibaba.fastjson.JSON
-import hdpf.bean.Location
 
 case class Location(
                  var vehicle_judge: String,
@@ -20,7 +19,7 @@ object Location {
     val json = "{\"vehicle_judge\":\"false\",\"longitude\":114.07174935388105,\"latitude\":30.449874911928906,\"altitude\":-0.7003295662911274,\"headroom\":0}"
     val loca = Location(json)
 
-    println(Boolean.parseBoolean(loca.vehicle_judge))
+    println(loca.vehicle_judge)
   }
 }
 

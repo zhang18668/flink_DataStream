@@ -18,6 +18,6 @@ object Arctan {
     val json = "{\"vehicle_judge\":\"false\",\"longitude\":114.07176905010752,\"latitude\":30.449450284505255,\"altitude\":-2.1649386732047,\"headroom\":0}"
     val arc = Arctan(json)
 
-    println(Boolean.parseBoolean(arc.vehicle_judge))
+    println(arc.vehicle_judge.toBoolean)
   }
 }
