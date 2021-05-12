@@ -1,10 +1,9 @@
 package hdpf.task
 
-import hdpf.bean.sink.Statistics
+import hdpf.bean.sink.TrafficVolume
 import hdpf.bean.source.{Device, Participant, Payload}
 import hdpf.operator.fitter.IsInPloyin
-import hdpf.operator.window.AllWindowApply
-import hdpf.sink.MySqlSink
+import hdpf.operator.window.TrafficVolumeAllWindowApply
 import hdpf.utils.{FlinkUtils, GlobalConfigUtil}
 import hdpf.watermark.AssginerWaterMarkVersion2
 import org.apache.flink.streaming.api.scala.DataStream

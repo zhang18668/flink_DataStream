@@ -2,30 +2,30 @@ package hdpf.sink
 
 import java.sql.{Connection, DriverManager, PreparedStatement}
 
-import hdpf.bean.sink.Statistics
+import hdpf.bean.sink.{QueueLength, TrafficVolume}
 import hdpf.utils.GlobalConfigUtil
 import org.apache.flink.api.scala._
 import org.apache.flink.configuration.Configuration
 import org.apache.flink.streaming.api.datastream.DataStreamSink
-import org.apache.flink.streaming.api.functions.sink.RichSinkFunction
+import org.apache.flink.streaming.api.functions.sink.{RichSinkFunction, SinkFunction}
 import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
 
-object Sink_MySql {
+object MySqlQueueLength {
 
   def main(args: Array[String]): Unit = {
 
     // 1. env
     val env = StreamExecutionEnvironment.getExecutionEnvironment
     // 2. load list
-    val listDataSet: DataStream[Statistics] = env.fromCollection(List(
-      Statistics("dazhuang", "123456", 48,1),
-      Statistics("erya", "123456", 50,1),
-      Statistics("sanpang", "123456", 60,1)
+    val listDataSet = env.fromCollection(List(
+      QueueLength("1620703103515", 48.1D,1),
+      QueueLength("1620703103316", 50D,2),
+      QueueLength("1620703104211", 60D,3)
     ))
 
     listDataSet.print()
     // 3. add sink
-    listDataSet.addSink(new MySqlSink)
+    listDataSet.addSink(new MySqlQueueLengthSink)
     // 4. execute
     env.execute()
 
@@ -33,10 +33,10 @@ object Sink_MySql {
 
 }
 
-class MySqlSink extends RichSinkFunction[Statistics] {
+class MySqlQueueLengthSink extends RichSinkFunction[QueueLength] {
 
-  var connection: Connection = null;
-  var ps: PreparedStatement = null;
+  var connection: Connection = _
+  var ps: PreparedStatement = _
 
   override def open(parameters: Configuration): Unit = {
 
@@ -45,21 +45,22 @@ class MySqlSink extends RichSinkFunction[Statistics] {
     // 2. 创建连接
     var connection = DriverManager.getConnection(GlobalConfigUtil.msyql_url, GlobalConfigUtil.msyql_user, GlobalConfigUtil.msyql_password)
     // 3. 创建PreparedStatement
-    val tablename=GlobalConfigUtil.trafficflow
-    val sql = "insert into "+tablename+"(startTime,endTime,result,classfiy) values(?,?,?,?)"
+    val tablename=GlobalConfigUtil.queuelength
+    val sql = "insert into "+tablename+"(timestamp,queueLength,roadId) values(?,?,?)"
     ps = connection.prepareStatement(sql)
   }
 
-  override def invoke(value: Statistics): Unit = {
+  override def invoke(value: QueueLength): Unit = {
     println("SQL执行")
     // 执行插入
-    ps.setString(1, value.startTime)
-    ps.setString(2, value.endTime)
-    ps.setInt(3, value.result)
-    ps.setInt(4, value.classfiy)
+    ps.setString(1, value.timestamp)
+    ps.setDouble(2, value.queueLength)
+    ps.setInt(3, value.roadId)
+
 
     ps.executeUpdate()
   }
+
 
 
   override def close(): Unit = {

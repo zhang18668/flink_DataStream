@@ -7,5 +7,5 @@ case class StopDelay(
                        var maxdelay: Double,
                        var mindelay: Double,
                        var averdelay:Double,
-                       var classfiy:Int
+                       var roadId:Int
                      )

@@ -17,9 +17,9 @@ object StopNumMysqlSinkDemo {
     val env = StreamExecutionEnvironment.getExecutionEnvironment
     // 2. load list
     val listDataSet = env.fromCollection(List(
-      StopNumber("1620703103515","1620703103515", 48, 1),
-      StopNumber("1620703103316","1620703103515", 50, 2),
-      StopNumber("1620703104211","1620703103515", 60, 3)
+      StopNumber("1620703103515","1620703103515", 48,2 ,1),
+      StopNumber("1620703103316","1620703103515", 50,3, 2),
+      StopNumber("1620703104211","1620703103515", 60, 4,3)
     ))
 
     listDataSet.print()
@@ -34,8 +34,8 @@ object StopNumMysqlSinkDemo {
 
 class StopNumMysqlSink extends RichSinkFunction[StopNumber] {
 
-  var connection: Connection = null;
-  var ps: PreparedStatement = null;
+  var connection: Connection = _
+  var ps: PreparedStatement =_
 
   override def open(parameters: Configuration): Unit = {
 
@@ -45,7 +45,7 @@ class StopNumMysqlSink extends RichSinkFunction[StopNumber] {
     var connection = DriverManager.getConnection(GlobalConfigUtil.msyql_url, GlobalConfigUtil.msyql_user, GlobalConfigUtil.msyql_password)
     // 3. 创建PreparedStatement
     val tablename = GlobalConfigUtil.stopnumber
-    val sql = "insert into " + tablename + "(startTime,endTime,averStopNum,classfiy) values(?,?,?,?)"
+    val sql = "insert into " + tablename + "(startTime,endTime,maxStopNum,averStopNum,roadId) values(?,?,?,?,?)"
     ps = connection.prepareStatement(sql)
   }
 
@@ -54,8 +54,9 @@ class StopNumMysqlSink extends RichSinkFunction[StopNumber] {
     // 执行插入
     ps.setString(1, value.startTime)
     ps.setString(2, value.endTime)
-    ps.setInt(3, value.averStopNum)
-    ps.setInt(4, value.classfiy)
+    ps.setInt(3, value.maxStopNum)
+    ps.setInt(4, value.averStopNum)
+    ps.setInt(5, value.roadId)
 
 
     ps.executeUpdate()

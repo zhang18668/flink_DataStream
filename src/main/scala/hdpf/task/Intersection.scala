@@ -1,10 +1,10 @@
 package hdpf.task
 
-import hdpf.bean.sink.Statistics
+import hdpf.bean.sink.TrafficVolume
 import hdpf.bean.source.{Device, Participant, Payload}
 import hdpf.operator.fitter.{IsInLane01, IsInPloyin}
-import hdpf.operator.window.AllWindowApply
-import hdpf.sink.MySqlSink
+import hdpf.operator.window.TrafficVolumeAllWindowApply
+import hdpf.sink.TrafficVolumeMySqlSink
 import hdpf.utils.{FlinkUtils, GlobalConfigUtil}
 import hdpf.watermark.AssginerWaterMarkVersion2
 import org.apache.flink.api.scala._
@@ -57,9 +57,9 @@ object Intersection {
     //    parDS.print("parDS")
     val arrFilter: DataStream[Participant] = parDS.filter(new IsInLane01)
     arrFilter.print("arr")
-    val winDS: DataStream[Statistics] = arrFilter.windowAll(SlidingEventTimeWindows.of(Time.seconds(GlobalConfigUtil.windowDuration), Time.seconds(GlobalConfigUtil.windowTimeStep))).apply(new AllWindowApply)
+    val winDS: DataStream[TrafficVolume] = arrFilter.windowAll(SlidingEventTimeWindows.of(Time.seconds(GlobalConfigUtil.windowDuration), Time.seconds(GlobalConfigUtil.windowTimeStep))).apply(new TrafficVolumeAllWindowApply)
 
-    winDS.addSink(new MySqlSink)
+    winDS.addSink(new TrafficVolumeMySqlSink)
     //    winDS.addSink()
 
     // 执行任务

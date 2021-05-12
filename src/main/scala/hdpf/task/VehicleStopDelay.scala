@@ -1,11 +1,9 @@
 package hdpf.task
 
-import hdpf.bean.sink.{QueueLength, TrafficVolume}
-import hdpf.bean.source.{Arctan, Device, Location, Participant, Payload, Pose}
+import hdpf.bean.source.{Device, Participant, Payload}
 import hdpf.operator.fitter.IsInLane01
-import hdpf.operator.map.QueueLengthFunction
-import hdpf.operator.window.{TrafficVolumeAllWindowApply, StopNumAllWindowApply}
-import hdpf.sink.{MySqlQueueLengthSink, StopNumMysqlSink}
+import hdpf.operator.window.StopNumAllWindowApply
+import hdpf.sink.StopNumMysqlSink
 import hdpf.utils.{FlinkUtils, GlobalConfigUtil}
 import hdpf.watermark.StopNumAssginerWaterMark
 import org.apache.flink.api.scala._
@@ -15,7 +13,7 @@ import org.apache.flink.streaming.api.windowing.time.Time
 import org.slf4j.LoggerFactory
 
 
-object VehicleStopNum {
+object VehicleStopDelay {
 
   def main(args: Array[String]): Unit = {
     val hdpfLogger = LoggerFactory.getLogger("hdpf")

@@ -23,6 +23,7 @@ object GlobalConfigUtil {
   val trafficflow=config.getString("trafficflow")
   val queuelength=config.getString("queuelength")
   val stopnumber=config.getString("stopnumber")
+  val trafficvolume=config.getString("trafficvolume")
   //时间窗口配置
 
   val windowDuration: Int = config.getInt("window.duration")

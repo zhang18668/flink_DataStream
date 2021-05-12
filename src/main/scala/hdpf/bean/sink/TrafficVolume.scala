@@ -1,9 +1,9 @@
 package hdpf.bean.sink
 
-case class Statistics(
+case class TrafficVolume(
                        var startTime: String,
                        var endTime: String,
                        var result: Int,
-                       var classfiy: Int
+                       var roadId: Int
                      )
 
