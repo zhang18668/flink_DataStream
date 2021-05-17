@@ -1,17 +1,20 @@
 package hdpf.task
 
-import hdpf.bean.sink.TrafficVolume
+import hdpf.bean.sink.{StopDelay, StopNumber, TrafficVolume}
 import hdpf.bean.source.{Device, Participant, Payload}
-import hdpf.operator.fitter.IsInPloyin
-import hdpf.operator.window.TrafficVolumeAllWindowApply
+import hdpf.operator.fitter.{IsInLane01, IsInPloyin}
+import hdpf.operator.window.allWindow.{StopDelayAllWindowApply, TrafficVolumeAllWindowApply}
+import hdpf.sink.TrafficVolumeMySqlSink
 import hdpf.utils.{FlinkUtils, GlobalConfigUtil}
-import hdpf.watermark.AssginerWaterMarkVersion2
+import hdpf.watermark.PayloadAssginerWaterMark
+import org.apache.flink.api.scala._
 import org.apache.flink.streaming.api.scala.DataStream
 import org.apache.flink.streaming.api.windowing.assigners.SlidingEventTimeWindows
 import org.apache.flink.streaming.api.windowing.time.Time
 import org.slf4j.LoggerFactory
-import org.apache.flink.api.scala._
-object SpeedFiter {
+
+
+object VehicleTrafficVolume {
 
   def main(args: Array[String]): Unit = {
     val hdpfLogger = LoggerFactory.getLogger("hdpf")
@@ -21,7 +24,7 @@ object SpeedFiter {
     // 整合Kafka
     val consumer = FlinkUtils.initKafkaFlink()
     val kafkaDataStream: DataStream[String] = env.addSource(consumer)
-    //    kafkaDataStream.print("kafkaDataStream")
+//    kafkaDataStream.print("kafkaDataStream")
     val canalDs = kafkaDataStream.map {
       json => {
         var mes = new Payload(null, null, null)
@@ -34,7 +37,7 @@ object SpeedFiter {
         mes
       }
     }
-    //    canalDs.print("canalDs")
+//    canalDs.print("canalDs")
     val messagesDS = canalDs.filter(mes => if (mes.version == null || mes.time == null) false else true)
     messagesDS.print("ds")
     //添加水印
@@ -42,7 +45,7 @@ object SpeedFiter {
     //    val waterDs: DataStream[Message] = canalDs.assignTimestampsAndWatermarks(WatermarkStrategy.forBoundedOutOfOrderness[Message](Duration.ofSeconds(20)).withTimestampAssigner(new SerializableTimestampAssigner[Message] {
     //    override def extractTimestamp(element: Message, recordTimestamp: Long): Long = Payload(element.payload).time.toLong
     //  }))
-    val waterDs: DataStream[Payload] = messagesDS.assignTimestampsAndWatermarks(new AssginerWaterMarkVersion2)
+    val waterDs: DataStream[Payload] = messagesDS.assignTimestampsAndWatermarks(new PayloadAssginerWaterMark)
     //链
     //    waterDs.print("waterDs")
     val deviceDS: DataStream[Array[Device]] = waterDs.map(_.device_data)
@@ -52,9 +55,11 @@ object SpeedFiter {
     //    devMapDS.print("devMapDS")
     val parDS: DataStream[Participant] = devMapDS.flatMap(x => x)
     //    parDS.print("parDS")
-    val arrFilter: DataStream[Participant] = parDS.filter(_.speed.toInt!=0)
+    val arrFilter: DataStream[Participant] = parDS.filter(new IsInLane01)
     arrFilter.print("arr")
-//    winDS.addSink(new MySqlSink)
+    val winDS: DataStream[TrafficVolume] = arrFilter.windowAll(SlidingEventTimeWindows.of(Time.seconds(GlobalConfigUtil.windowDuration), Time.seconds(GlobalConfigUtil.windowTimeStep))).apply(new TrafficVolumeAllWindowApply)
+
+    winDS.addSink(new TrafficVolumeMySqlSink)
     //    winDS.addSink()
 
     // 执行任务

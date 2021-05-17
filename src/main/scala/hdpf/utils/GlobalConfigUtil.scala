@@ -20,10 +20,10 @@ object GlobalConfigUtil {
   val msyql_url: String = config.getString("msyql_url")
   val msyql_user: String = config.getString("msyql_user")
   val msyql_password: String = config.getString("msyql_passwd")
-  val trafficflow=config.getString("trafficflow")
   val queuelength=config.getString("queuelength")
   val stopnumber=config.getString("stopnumber")
   val trafficvolume=config.getString("trafficvolume")
+  val stopdelay=config.getString("stopdelay")
   //时间窗口配置
 
   val windowDuration: Int = config.getInt("window.duration")

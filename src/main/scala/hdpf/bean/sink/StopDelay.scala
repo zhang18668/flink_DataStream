@@ -4,8 +4,8 @@ package hdpf.bean.sink
 case class StopDelay(
                        var startTime: String,
                        var endTime: String,
-                       var maxdelay: Double,
-                       var mindelay: Double,
-                       var averdelay:Double,
+                       var maxDelay: Double,
+                       var minDelay: Double,
+                       var avgDelay:Double,
                        var roadId:Int
                      )

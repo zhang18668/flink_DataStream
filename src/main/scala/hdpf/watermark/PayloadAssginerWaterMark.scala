@@ -1,11 +1,11 @@
 package hdpf.watermark
 
-import hdpf.bean.source.Participant
+import hdpf.bean.source.{Participant, Payload}
 import org.apache.flink.streaming.api.functions.AssignerWithPeriodicWatermarks
 import org.apache.flink.streaming.api.watermark.Watermark
 
 
-class StopNumAssginerWaterMark extends AssignerWithPeriodicWatermarks[Participant] {
+class PayloadAssginerWaterMark extends AssignerWithPeriodicWatermarks[Payload] {
 
   // 当前的时间戳
   var currentTimestamp = 0L
@@ -19,8 +19,8 @@ class StopNumAssginerWaterMark extends AssignerWithPeriodicWatermarks[Participan
   }
 
   // 比较当前元素的时间和上一个元素的时间,取最大值,防止时光倒流
-  override def extractTimestamp(element: Participant, previousElementTimestamp: Long): Long = {
-    var time = element.timestamp.toLong
+  override def extractTimestamp(element: Payload, previousElementTimestamp: Long): Long = {
+    val time = element.time.toLong
     currentTimestamp = Math.max(time, previousElementTimestamp)
     currentTimestamp
   }

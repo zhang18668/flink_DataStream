@@ -4,10 +4,10 @@ import hdpf.bean.sink.{QueueLength, TrafficVolume}
 import hdpf.bean.source.{Arctan, Device, Location, Participant, Payload, Pose}
 import hdpf.operator.fitter.IsInLane01
 import hdpf.operator.map.QueueLengthFunction
-import hdpf.operator.window.{TrafficVolumeAllWindowApply, StopNumAllWindowApply}
+import hdpf.operator.window.allWindow.{StopNumAllWindowApply, StopDelayAllWindowApply}
 import hdpf.sink.{MySqlQueueLengthSink, StopNumMysqlSink}
 import hdpf.utils.{FlinkUtils, GlobalConfigUtil}
-import hdpf.watermark.StopNumAssginerWaterMark
+import hdpf.watermark.ParticipantAssginerWaterMark
 import org.apache.flink.api.scala._
 import org.apache.flink.streaming.api.scala.DataStream
 import org.apache.flink.streaming.api.windowing.assigners.SlidingEventTimeWindows
@@ -44,7 +44,7 @@ object VehicleStopNum {
     val devTupleDS: DataStream[(Device, String)] = messagesDS.flatMap(x => x.device_data.map(y => (y, x.time)))
     val parTupleDS: DataStream[(Participant, String)] = devTupleDS.flatMap(x => x._1.`object`.map(y => (y, x._2)))
     val parDS: DataStream[Participant] = parTupleDS.map(x => new Participant(x._1.`type`, x._1.license_plate, x._1.id, x._1.pose, x._1.location, x._1.arctan, x._1.conf, x._1.speed, x._2))
-    val parWaterDS: DataStream[Participant] = parDS.assignTimestampsAndWatermarks(new StopNumAssginerWaterMark)
+    val parWaterDS: DataStream[Participant] = parDS.assignTimestampsAndWatermarks(new ParticipantAssginerWaterMark)
     val parFitterDS = parWaterDS.filter(new IsInLane01)
     val parSinkDS = parFitterDS.windowAll(SlidingEventTimeWindows.of(Time.seconds(GlobalConfigUtil.windowDuration), Time.seconds(GlobalConfigUtil.windowTimeStep))).apply(new StopNumAllWindowApply)
     parSinkDS.addSink(new StopNumMysqlSink )
