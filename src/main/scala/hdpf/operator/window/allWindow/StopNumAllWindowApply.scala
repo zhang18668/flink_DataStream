@@ -43,7 +43,7 @@ class StopNumAllWindowApply extends AllWindowFunction[Participant, StopNumber, T
     val eventEndStr = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(eventEnd)
     //TODO 后续补上
     val random = new Random
-    val maxStopNum=(random.nextDouble()*averStopNum).toInt
+    val maxStopNum=((random.nextDouble()+1)*averStopNum).toInt
     val stopNumber = StopNumber(eventStartStr, eventEndStr, maxStopNum, averStopNum, 1)
     out.collect(stopNumber)
   }

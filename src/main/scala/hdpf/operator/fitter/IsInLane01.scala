@@ -52,11 +52,11 @@ class IsInLane01 extends FilterFunction[Participant] {
 
 
       flag=true
+      println("True:"+value.location)
     }
 
     else{
       flag=false
-      println("false:"+value.location)
     }
     flag
   }

@@ -45,7 +45,7 @@ class StopNumMysqlSink extends RichSinkFunction[StopNumber] {
     var connection = DriverManager.getConnection(GlobalConfigUtil.msyql_url, GlobalConfigUtil.msyql_user, GlobalConfigUtil.msyql_password)
     // 3. 创建PreparedStatement
     val tablename = GlobalConfigUtil.stopnumber
-    val sql = "insert into " + tablename + "(startTime,endTime,maxStopNum,averStopNum,roadId) values(?,?,?,?,?)"
+    val sql = "insert into " + tablename + "(startTime,endTime,maxStopNum,avgStopNum,roadId) values(?,?,?,?,?)"
     ps = connection.prepareStatement(sql)
   }
 
@@ -55,7 +55,7 @@ class StopNumMysqlSink extends RichSinkFunction[StopNumber] {
     ps.setString(1, value.startTime)
     ps.setString(2, value.endTime)
     ps.setInt(3, value.maxStopNum)
-    ps.setInt(4, value.averStopNum)
+    ps.setInt(4, value.avgStopNum)
     ps.setInt(5, value.roadId)
 
 

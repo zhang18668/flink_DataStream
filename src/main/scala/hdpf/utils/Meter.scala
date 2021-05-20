@@ -31,28 +31,26 @@ object Meter {
     * @param longitude
     * @return Boolean
     */
-  def isInRoad(latitude: Double, longitude: Double,pts:List[Point]): Boolean = {
+  def isInRoad(longitude: Double, latitude: Double,pts:List[Point]): Boolean = {
     var flag = false
-    val p = Point(latitude, longitude)
-
+    val p = Point(longitude, latitude)
     var intersection = 0
     for (i <- pts.indices) {
-
       val p1 = pts(i)
       val p2 = pts((i + 1) % pts.size)
-
       if (p.y >= Array(p1.y, p2.y).min && p.y < Array(p1.y, p2.y).max)
         if (((p.y - p1.y) * (p2.x - p1.x) / (p2.y - p1.y) + p1.x) < p.x)
           intersection += 1
     }
     if (intersection % 2 == 1) {
-      //      println(value.location)
 
 
-      flag = true
-    } else {
-      flag = false
-      //      println("false:"+value.location)
+      flag=true
+      println("True:"+p)
+    }
+
+    else{
+      flag=false
     }
     flag
   }
