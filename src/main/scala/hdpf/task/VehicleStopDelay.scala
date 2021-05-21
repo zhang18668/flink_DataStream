@@ -1,7 +1,6 @@
 package hdpf.task
 
 import hdpf.bean.source.{Device, Participant, Payload}
-import hdpf.operator.fitter.IsInLane01
 import hdpf.operator.window.allWindow.{StopDelayAllWindowApply, StopNumAllWindowApply}
 import hdpf.sink.{StopDelayMysqlSink, StopNumMysqlSink}
 import hdpf.utils.{FlinkUtils, GlobalConfigUtil}
@@ -43,9 +42,9 @@ object VehicleStopDelay {
     val parTupleDS: DataStream[(Participant, String)] = devTupleDS.flatMap(x => x._1.`object`.map(y => (y, x._2)))
     val parDS: DataStream[Participant] = parTupleDS.map(x => new Participant(x._1.`type`, x._1.license_plate, x._1.id, x._1.pose, x._1.location, x._1.arctan, x._1.conf, x._1.speed, x._2))
     val parWaterDS: DataStream[Participant] = parDS.assignTimestampsAndWatermarks(new ParticipantAssginerWaterMark)
-    val parFitterDS = parWaterDS.filter(new IsInLane01)
-    val parSinkDS = parFitterDS.windowAll(SlidingEventTimeWindows.of(Time.seconds(GlobalConfigUtil.windowDuration), Time.seconds(GlobalConfigUtil.windowTimeStep))).apply(new StopDelayAllWindowApply)
-    parSinkDS.addSink(new StopDelayMysqlSink )
+//    val parFitterDS = parWaterDS.filter(new IsInLane01)
+//    val parSinkDS = parFitterDS.windowAll(SlidingEventTimeWindows.of(Time.seconds(GlobalConfigUtil.windowDuration), Time.seconds(GlobalConfigUtil.windowTimeStep))).apply(new StopDelayAllWindowApply)
+//    parSinkDS.addSink(new StopDelayMysqlSink )
     // 执行任务
     env.execute(GlobalConfigUtil.jobName)
   }

@@ -1,28 +1,14 @@
 package hdpf.utils
 
+import hdpf.bean.enity.Point
+
 /**
   * 计算GPS经纬度 俩点之间的直线距离
   */
 object Meter {
-  def main(args: Array[String]): Unit = {
-    //    val pts = List(Point(121.612389396, 31.2522492584), Point(121.612510129, 31.2522890327), Point(121.612447139, 31.2524226077), Point(121.612350552, 31.2523838254))
-    //    val pts = List(Point(121.612447139, 31.2524226077), Point(121.612389397, 31.2524009617), Point(121.612247669,31.252842363), Point(121.612247669, 31.2528658129))
-
-    val lon1 = 121.612389396
-    val lat1 = 31.2522492584
-    val lon2 = 121.612247669
-    val lat2 = 31.2528658129
-    println(getDistance(lon1, lat1, lon2, lat2))
-  }
-
-
   private val EARTH_RADIUS: Double = 6378.137
 
   private def rad(d: Double): Double = d * Math.PI / 180.0
-
-  case class Point(var x: Double, var y: Double) {
-    def getPoint: Point = Point.apply(x, y)
-  }
 
   /**
     * 通过经纬度判断是否在路口道路上停车
@@ -31,7 +17,7 @@ object Meter {
     * @param longitude
     * @return Boolean
     */
-  def isInRoad(longitude: Double, latitude: Double,pts:List[Point]): Boolean = {
+  def isInRoad(longitude: Double, latitude: Double, pts: List[Point]): Boolean = {
     var flag = false
     val p = Point(longitude, latitude)
     var intersection = 0
@@ -43,14 +29,11 @@ object Meter {
           intersection += 1
     }
     if (intersection % 2 == 1) {
-
-
-      flag=true
-      println("True:"+p)
+      flag = true
+      println("True:" + p)
     }
-
-    else{
-      flag=false
+    else {
+      flag = false
     }
     flag
   }

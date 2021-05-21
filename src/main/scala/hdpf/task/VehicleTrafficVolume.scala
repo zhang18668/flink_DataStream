@@ -2,7 +2,7 @@ package hdpf.task
 
 import hdpf.bean.sink.{StopDelay, StopNumber, TrafficVolume}
 import hdpf.bean.source.{Device, Participant, Payload}
-import hdpf.operator.fitter.{IsInLane01, IsInPloyin}
+import hdpf.operator.fitter. IsInPloyin
 import hdpf.operator.window.allWindow.{StopDelayAllWindowApply, TrafficVolumeAllWindowApply}
 import hdpf.sink.TrafficVolumeMySqlSink
 import hdpf.utils.{FlinkUtils, GlobalConfigUtil}
@@ -55,11 +55,11 @@ object VehicleTrafficVolume {
     //    devMapDS.print("devMapDS")
     val parDS: DataStream[Participant] = devMapDS.flatMap(x => x)
     //    parDS.print("parDS")
-    val arrFilter: DataStream[Participant] = parDS.filter(new IsInLane01)
-    arrFilter.print("arr")
-    val winDS: DataStream[TrafficVolume] = arrFilter.windowAll(SlidingEventTimeWindows.of(Time.seconds(GlobalConfigUtil.windowDuration), Time.seconds(GlobalConfigUtil.windowTimeStep))).apply(new TrafficVolumeAllWindowApply)
-
-    winDS.addSink(new TrafficVolumeMySqlSink)
+//    val arrFilter: DataStream[Participant] = parDS.filter(new IsInLane01)
+//    arrFilter.print("arr")
+//    val winDS: DataStream[TrafficVolume] = arrFilter.windowAll(SlidingEventTimeWindows.of(Time.seconds(GlobalConfigUtil.windowDuration), Time.seconds(GlobalConfigUtil.windowTimeStep))).apply(new TrafficVolumeAllWindowApply)
+//
+//    winDS.addSink(new TrafficVolumeMySqlSink)
     //    winDS.addSink()
 
     // 执行任务

@@ -17,8 +17,6 @@ class StopNumAllWindowApply extends AllWindowFunction[Participant, StopNumber, T
 
 
   def apply(window: TimeWindow, input: Iterable[Participant], out: Collector[StopNumber]): Unit = {
-    print("apply执行")
-    val set = Set[Participant]()
     //    取出道路上的一个末端点
     var arr = new ArrayBuffer[Int]()
     val lon = 121.612447139

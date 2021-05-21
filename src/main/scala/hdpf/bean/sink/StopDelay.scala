@@ -1,6 +1,5 @@
 package hdpf.bean.sink
 
-
 case class StopDelay(
                        var startTime: String,
                        var endTime: String,

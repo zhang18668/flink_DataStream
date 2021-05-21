@@ -38,12 +38,12 @@ object VehicleQueueLength {
     val messagesDS: DataStream[Payload] = canalDs.filter(mes => if (mes.version == null || mes.time == null||mes.device_data==null) false else true)
     //    waterDs.print("waterDs")
     val devTupleDS: DataStream[(Device, String)] = messagesDS.flatMap(x => x.device_data.map(y => (y, x.time)))
-//    返回距离与时间戳DS
-    val distanceDS: DataStream[QueueLength] = devTupleDS.map(new QueueLengthFunction)
-//    distanceDS.print("distance")
-    val queueLenDS = distanceDS.filter(_.queueLength!=0D)
-    queueLenDS.print("queueLenDS")
-    queueLenDS.addSink(new MySqlQueueLengthSink)
+////    返回距离与时间戳DS
+//    val distanceDS: DataStream[QueueLength] = devTupleDS.map(new QueueLengthFunction)
+////    distanceDS.print("distance")
+//    val queueLenDS = distanceDS.filter(_.queueLength!=0D)
+//    queueLenDS.print("queueLenDS")
+//    queueLenDS.addSink(new MySqlQueueLengthSink)
 //最后将数据添加到mysql sink
     //TODO
     // 执行任务

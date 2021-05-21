@@ -2,6 +2,8 @@ package hdpf.utils
 
 import java.util.Properties
 
+import hdpf.utils.ConfigLoader.propertiesName
+import org.apache.commons.lang3.SystemUtils
 import org.apache.flink.api.common.serialization.SimpleStringSchema
 import org.apache.flink.runtime.state.filesystem.FsStateBackend
 import org.apache.flink.streaming.api.environment.CheckpointConfig
@@ -12,48 +14,62 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer
 object FlinkUtils {
 
   // 初始化flink的流式环境
-  def initFlinkEnv()={
+  def initFlinkEnv() = {
+
     val env = StreamExecutionEnvironment.getExecutionEnvironment
-    // 设置env的处理时间为EventTime
-    env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
-//    env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime)
-    //  设置并行度
-//    env.setParallelism(3)
-//
-    // 设置checkpoint
-    // 开启checkpoint,间隔时间为5s
-//    env.enableCheckpointing(5000)
-//    // 设置处理模式
-//    env.getCheckpointConfig.setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE)
-//    // 设置两次checkpoint的间隔
-//    env.getCheckpointConfig.setMinPauseBetweenCheckpoints(1000)
-//    // 设置超时时长
-//    env.getCheckpointConfig.setCheckpointTimeout(60000)
-//    // 设置并行度
-//    env.getCheckpointConfig.setMaxConcurrentCheckpoints(1)
-//    // 当程序关闭的时候,触发额外的checkpoint
-//    env.getCheckpointConfig.enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION)
-    // 设置检查点在hdfs中存储的位置
-//    env.setStateBackend(new FsStateBackend("hdfs://cdh01:8020/flink-checkpoint"))
 
+    /*
+    * 本地环境和生产环境自动识别
+     */
+    {
+      if (SystemUtils.IS_OS_WINDOWS || SystemUtils.IS_OS_MAC) {
+        //本地环境配置文件操作的对象
+        //        val env = StreamExecutionEnvironment.getExecutionEnvironment
+        // 设置env的处理时间为EventTime
+        env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
+      } else {
+        //生产环境
+        //        val env = StreamExecutionEnvironment.getExecutionEnvironment
+        // 设置env的处理时间为EventTime
+        env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
+        env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime)
+        //  设置并行度
+        env.setParallelism(3)
+        //
+        // 设置checkpoint
+        // 开启checkpoint,间隔时间为5s
+        env.enableCheckpointing(5000)
+        // 设置处理模式
+        env.getCheckpointConfig.setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE)
+        // 设置两次checkpoint的间隔
+        env.getCheckpointConfig.setMinPauseBetweenCheckpoints(1000)
+        // 设置超时时长
+        env.getCheckpointConfig.setCheckpointTimeout(60000)
+        // 设置并行度
+        env.getCheckpointConfig.setMaxConcurrentCheckpoints(1)
+        // 当程序关闭的时候,触发额外的checkpoint
+        env.getCheckpointConfig.enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION)
+        // 设置检查点在hdfs中存储的位置
+        env.setStateBackend(new FsStateBackend("hdfs://cdh01:8020/flink-checkpoint"))
 
+      }
+    }
 
-//        env.setStateBackend(new FsStateBackend("file://D:\\flink\\flink_DataStream\\src\\main\\data"))
 
     env
   }
 
 
-  def initKafkaFlink()={
+  def initKafkaFlink() = {
     // 整合Kafka
-    val  props:Properties = new Properties()
+    val props: Properties = new Properties()
 
 
-    props.setProperty("bootstrap.servers",GlobalConfigUtil.bootstrapServers)
-    props.setProperty("group.id",GlobalConfigUtil.groupId)
-    props.setProperty("enable.auto.commit",GlobalConfigUtil.enableAutoCommit)
-    props.setProperty("auto.commit.interval.ms",GlobalConfigUtil.autoCommitIntervalMs)
-    props.setProperty("auto.offset.reset",GlobalConfigUtil.autoOffsetReset)
+    props.setProperty("bootstrap.servers", GlobalConfigUtil.bootstrapServers)
+    props.setProperty("group.id", GlobalConfigUtil.groupId)
+    props.setProperty("enable.auto.commit", GlobalConfigUtil.enableAutoCommit)
+    props.setProperty("auto.commit.interval.ms", GlobalConfigUtil.autoCommitIntervalMs)
+    props.setProperty("auto.offset.reset", GlobalConfigUtil.autoOffsetReset)
 
 
     // String topic, DeserializationSchema<T> valueDeserializer, Properties props
@@ -62,7 +78,7 @@ object FlinkUtils {
       new SimpleStringSchema(),
       props
     )
-//    consumer.setStartFromEarliest()
+    //    consumer.setStartFromEarliest()
     consumer.setStartFromLatest()
     consumer
   }

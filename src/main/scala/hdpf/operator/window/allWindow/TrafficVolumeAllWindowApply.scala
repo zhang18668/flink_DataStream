@@ -1,15 +1,11 @@
 package hdpf.operator.window.allWindow
 
 import java.text.SimpleDateFormat
-import java.util.{Date, Random}
+import java.util.Date
 
-import hdpf.bean.sink.{StopNumber, TrafficVolume}
+import hdpf.bean.sink.TrafficVolume
 import hdpf.bean.source.Participant
-import hdpf.utils.Meter.getDistance
 import org.apache.flink.streaming.api.scala.function.AllWindowFunction
-
-import scala.collection.mutable.ArrayBuffer
-//import org.apache.flink.streaming.api.functions.windowing.AllWindowFunction
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow
 import org.apache.flink.util.Collector
 

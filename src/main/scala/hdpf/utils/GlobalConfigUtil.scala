@@ -1,43 +1,33 @@
 package hdpf.utils
-
-import com.typesafe.config.{Config, ConfigFactory}
-
-// 配置文件加载类
-object GlobalConfigUtil {
-
-  // 通过工厂加载配置
-  val config:Config = ConfigFactory.load()
-
-  val bootstrapServers = config.getString("bootstrap.servers")
-  val zookeeperConnect = config.getString("zookeeper.connect")
-  val inputTopic = config.getString("input.topic")
-  val groupId = config.getString("group.id")
-  val enableAutoCommit = config.getString("enable.auto.commit")
-  val autoCommitIntervalMs = config.getString("auto.commit.interval.ms")
-  val autoOffsetReset = config.getString("auto.offset.reset")
- //mysql 配置
-  val mysql_driver: String = config.getString("mysql_driver")
-  val msyql_url: String = config.getString("msyql_url")
-  val msyql_user: String = config.getString("msyql_user")
-  val msyql_password: String = config.getString("msyql_passwd")
-  val queuelength=config.getString("queuelength")
-  val stopnumber=config.getString("stopnumber")
-  val trafficvolume=config.getString("trafficvolume")
-  val stopdelay=config.getString("stopdelay")
+/**
+  * 读取配置文件的工具类
+  */
+object GlobalConfigUtil{
+//kafka配置
+  lazy val bootstrapServers: String = ConfigLoader.getString("bootstrap.servers")
+  lazy val zookeeperConnect: String = ConfigLoader.getString("zookeeper.connect")
+  lazy val inputTopic: String = ConfigLoader.getString("input.topic")
+  lazy val groupId: String = ConfigLoader.getString("group.id")
+  lazy val enableAutoCommit: String = ConfigLoader.getString("enable.auto.commit")
+  lazy val autoCommitIntervalMs: String = ConfigLoader.getString("auto.commit.interval.ms")
+  lazy val autoOffsetReset: String = ConfigLoader.getString("auto.offset.reset")
+  //mysql 配置
+  lazy val mysql_driver: String = ConfigLoader.getString("mysql_driver")
+  lazy val msyql_url: String = ConfigLoader.getString("msyql_url")
+  lazy val msyql_user: String = ConfigLoader.getString("msyql_user")
+  lazy val msyql_password: String = ConfigLoader.getString("msyql_passwd")
+  lazy val queuelength: String = ConfigLoader.getString("queuelength")
+  lazy val stopnumber: String = ConfigLoader.getString("stopnumber")
+  lazy val trafficvolume: String = ConfigLoader.getString("trafficvolume")
+  lazy val stopdelay: String = ConfigLoader.getString("stopdelay")
   //时间窗口配置
+  lazy val windowDuration: Int = ConfigLoader.getInt("window.duration")
+  lazy val windowTimeStep: Int = ConfigLoader.getInt("window.time.step")
+  lazy val jobName: String = ConfigLoader.getString("flink.job.name")
 
-  val windowDuration: Int = config.getInt("window.duration")
-  val windowTimeStep: Int = config.getInt("window.time.step")
-  val jobName: String = config.getString("flink.job.name")
 
   def main(args: Array[String]): Unit = {
-    println(bootstrapServers)
-    println(zookeeperConnect)
-    println(inputTopic)
-    println(groupId)
-    println(enableAutoCommit)
-    println(autoCommitIntervalMs)
-    println(autoOffsetReset)
+    println("DB_ORACLE_URL = " + bootstrapServers)
+    println("KAFKA_ADDRESS = " + groupId)
   }
-
 }

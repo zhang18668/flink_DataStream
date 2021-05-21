@@ -21,9 +21,6 @@ object App {
       .setVirtualHost("ord-ft")
       .setUserName("fds-ft")
       .setPassword("Fds-ft@2020")
-      //      .setConnectionTimeout(10000)
-      //      .setAutomaticRecovery(true)
-      //      .setNetworkRecoveryInterval(10000)
       .build
 
     val stream = env
