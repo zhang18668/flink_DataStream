@@ -1,9 +1,10 @@
 package hdpf.utils
+
 /**
   * 读取配置文件的工具类
   */
-object GlobalConfigUtil{
-//kafka配置
+object GlobalConfigUtil {
+  //kafka配置
   lazy val bootstrapServers: String = ConfigLoader.getString("bootstrap.servers")
   lazy val zookeeperConnect: String = ConfigLoader.getString("zookeeper.connect")
   lazy val inputTopic: String = ConfigLoader.getString("input.topic")
@@ -24,6 +25,13 @@ object GlobalConfigUtil{
   lazy val windowDuration: Int = ConfigLoader.getInt("window.duration")
   lazy val windowTimeStep: Int = ConfigLoader.getInt("window.time.step")
   lazy val jobName: String = ConfigLoader.getString("flink.job.name")
+  //rabbitMQ配置
+  lazy val rabbitmqHost: String = ConfigLoader.getString("rabbitmq.host")
+  lazy val rabbitmqPort: Int = ConfigLoader.getInt("rabbitmq.port")
+  lazy val rabbitmqVirtualHost: String = ConfigLoader.getString("rabbitmq.virtual.host")
+  lazy val rabbitmqUserName: String = ConfigLoader.getString("rabbitmq.user.name")
+  lazy val rabbitmqPassword: String = ConfigLoader.getString(" rabbitmq.password")
+  lazy val rabbitmqQueueName: String = ConfigLoader.getString(" rabbitmq.queue.name")
 
 
   def main(args: Array[String]): Unit = {

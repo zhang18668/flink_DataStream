@@ -1,6 +1,6 @@
 package hdpf.task
 
-import hdpf.utils.FlinkUtils
+import hdpf.utils.{FlinkUtils, GlobalConfigUtil}
 import org.apache.flink.api.scala._
 import org.apache.flink.streaming.connectors.rabbitmq.RMQSource
 import org.apache.flink.streaming.connectors.rabbitmq.common.RMQConnectionConfig
@@ -15,21 +15,9 @@ object App {
     val env = FlinkUtils.initFlinkEnv()
 
     // TODO 2. 整合MQ
-    val connectionConfig = new RMQConnectionConfig.Builder()
-      .setHost("172.31.240.139")
-      .setPort(5672)
-      .setVirtualHost("ord-ft")
-      .setUserName("fds-ft")
-      .setPassword("Fds-ft@2020")
-      .build
+    val connectionConfig = FlinkUtils.initMQFlink()
 
-    val stream = env
-      .addSource(new RMQSource[String](
-        connectionConfig,            // config for the RabbitMQ connection
-        "ord-obu-data-temp-zzh",                // name of the RabbitMQ queue to consume
-        false,                        // use correlation ids; can be false if only at-least-once is required
-        new SimpleStringSchema))     // deserialization schema to turn messages into Java objects
-      .setParallelism(1)               // non-parallel source is only required for exactly-once
+    val stream = env.addSource(new RMQSource[String](connectionConfig, GlobalConfigUtil.rabbitmqQueueName, false, new SimpleStringSchema)).setParallelism(1)
 //TODO 3.transform
     stream.print()
 //TODO 4.sink

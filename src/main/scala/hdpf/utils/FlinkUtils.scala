@@ -10,6 +10,9 @@ import org.apache.flink.streaming.api.environment.CheckpointConfig
 import org.apache.flink.streaming.api.{CheckpointingMode, TimeCharacteristic}
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer
+import org.apache.flink.streaming.connectors.rabbitmq.RMQSource
+import org.apache.flink.streaming.connectors.rabbitmq.common.RMQConnectionConfig
+import org.apache.flink.streaming.util.serialization.SimpleStringSchema
 
 object FlinkUtils {
 
@@ -82,4 +85,22 @@ object FlinkUtils {
     consumer
   }
 
+  def initMQFlink(): RMQConnectionConfig = {
+    // 整合mq
+    val connectionConfig = new RMQConnectionConfig.Builder()
+      .setHost(GlobalConfigUtil.rabbitmqHost)
+      .setPort(GlobalConfigUtil.rabbitmqPort)
+      .setVirtualHost(GlobalConfigUtil.rabbitmqVirtualHost)
+      .setUserName(GlobalConfigUtil.rabbitmqUserName)
+      .setPassword(GlobalConfigUtil.rabbitmqPassword)
+      .build
+    connectionConfig
+    //    val stream = env
+    //      .addSource(new RMQSource[String](
+    //        connectionConfig,            // config for the RabbitMQ connection
+    //        "ord-obu-data-temp-zzh",                // name of the RabbitMQ queue to consume
+    //        false,                        // use correlation ids; can be false if only at-least-once is required
+    //        new SimpleStringSchema))     // deserialization schema to turn messages into Java objects
+    //      .setParallelism(1)               // non-parallel source is only required for exactly-once
+  }
 }
