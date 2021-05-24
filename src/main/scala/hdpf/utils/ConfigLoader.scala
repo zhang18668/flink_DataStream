@@ -30,7 +30,7 @@ object ConfigLoader {
     }
   }
   //使用classLoader加载类对象，然后加载conf.properties
-  private val inputStream = ConfigLoader.getClass.getClassLoader.getResourceAsStream("conf.properties")
+  val inputStream: InputStream = ConfigLoader.getClass.getClassLoader.getResourceAsStream("config.properties")
 
   //使用Properties的load方法加载inputStream
   val props = new Properties()
@@ -49,6 +49,6 @@ object ConfigLoader {
   def getString(key: String): String = props.getProperty(key)
 
   //编写方法获取int类型的key对应的value值
-  def getInt(key: String): Integer = props.getProperty(key).toInt
+  def getInt(key: String): Int = props.getProperty(key).toInt
 
 }
