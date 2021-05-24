@@ -32,7 +32,6 @@ object FlinkUtils {
         //        val env = StreamExecutionEnvironment.getExecutionEnvironment
         // 设置env的处理时间为EventTime
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
-        env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime)
         //  设置并行度
         env.setParallelism(3)
         //
