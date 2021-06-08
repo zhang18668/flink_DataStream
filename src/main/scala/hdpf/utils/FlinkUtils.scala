@@ -4,7 +4,6 @@ import java.util.Properties
 
 import hdpf.utils.ConfigLoader.propertiesName
 import org.apache.commons.lang3.SystemUtils
-import org.apache.flink.api.common.serialization.SimpleStringSchema
 import org.apache.flink.runtime.state.filesystem.FsStateBackend
 import org.apache.flink.streaming.api.environment.CheckpointConfig
 import org.apache.flink.streaming.api.{CheckpointingMode, TimeCharacteristic}

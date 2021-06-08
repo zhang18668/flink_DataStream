@@ -18,4 +18,9 @@ object Participant {
   def apply(json: String): Participant = {
     JSON.parseObject[Participant](json, classOf[Participant])
   }
+  def par_string(): String = {
+    val str=""
+//    逻辑
+    str
+  }
 }
