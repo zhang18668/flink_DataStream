@@ -12,6 +12,8 @@ object GlobalConfigUtil {
   lazy val enableAutoCommit: String = ConfigLoader.getString("enable.auto.commit")
   lazy val autoCommitIntervalMs: String = ConfigLoader.getString("auto.commit.interval.ms")
   lazy val autoOffsetReset: String = ConfigLoader.getString("auto.offset.reset")
+  lazy val outputTopic: String = ConfigLoader.getString("output.topic")
+//  lazy val autoOffsetReset: String = ConfigLoader.getString("auto.offset.reset")
   //mysql 配置
   lazy val mysql_driver: String = ConfigLoader.getString("mysql_driver")
   lazy val msyql_url: String = ConfigLoader.getString("msyql_url")

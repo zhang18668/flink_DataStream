@@ -38,6 +38,7 @@ object Entrance {
     //TODO 整合Kafka
     val consumer = FlinkUtils.initKafkaFlink()
     val kafkaDataStream: DataStream[String] = env.addSource(consumer)
+    kafkaDataStream.print("原始")
     //TODO 以下后期会转化
     //将原始数据转化为 Payload  对象 并过滤脏数据
     val canalDs = kafkaDataStream.map {
@@ -67,7 +68,7 @@ object Entrance {
     //    加一个逻辑，写入到hdpf/ods/table/date
 
 
-    val fileDS: DataStream[String] = parDS.map(_.toString)
+    val fileDS: DataStream[String] = parDS.map(_.par_string)
     val sink: StreamingFileSink[String] = StreamingFileSink
       .forRowFormat(new Path("hdfs://cdh01:8020/hdpf/ods/table/date"), new SimpleStringEncoder[String]("UTF-8"))
       .withRollingPolicy(
@@ -79,6 +80,7 @@ object Entrance {
       .build()
     fileDS.print("haha")
     fileDS.addSink(sink)
+    fileDS.addSink(FlinkUtils.producerKafkaFlink())
 
 //    val parWaterDS: DataStream[Participant] = parDS.assignTimestampsAndWatermarks(new ParticipantAssginerWaterMark)
     //对于路口

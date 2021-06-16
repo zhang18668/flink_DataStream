@@ -8,7 +8,7 @@ import org.apache.flink.runtime.state.filesystem.FsStateBackend
 import org.apache.flink.streaming.api.environment.CheckpointConfig
 import org.apache.flink.streaming.api.{CheckpointingMode, TimeCharacteristic}
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer
+import org.apache.flink.streaming.connectors.kafka.{FlinkKafkaConsumer, FlinkKafkaProducer}
 import org.apache.flink.streaming.connectors.rabbitmq.RMQSource
 import org.apache.flink.streaming.connectors.rabbitmq.common.RMQConnectionConfig
 import org.apache.flink.streaming.util.serialization.SimpleStringSchema
@@ -84,6 +84,26 @@ object FlinkUtils {
     consumer
   }
 
+  def producerKafkaFlink() = {
+    // 整合Kafka
+    val props: Properties = new Properties()
+
+
+    props.setProperty("bootstrap.servers", GlobalConfigUtil.bootstrapServers)
+//    props.setProperty("group.id", GlobalConfigUtil.groupId)
+//    props.setProperty("enable.auto.commit", GlobalConfigUtil.enableAutoCommit)
+//    props.setProperty("auto.commit.interval.ms", GlobalConfigUtil.autoCommitIntervalMs)
+//    props.setProperty("auto.offset.reset", GlobalConfigUtil.autoOffsetReset)
+
+    // String topic, DeserializationSchema<T> valueDeserializer, Properties props
+    val producer  = new FlinkKafkaProducer[String](
+      GlobalConfigUtil.outputTopic,
+      new SimpleStringSchema(),
+      props
+    )
+    producer
+
+  }
   def initMQFlink(): RMQConnectionConfig = {
     // 整合mq
     val connectionConfig = new RMQConnectionConfig.Builder()

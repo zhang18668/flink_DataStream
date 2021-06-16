@@ -12,15 +12,18 @@ case class Participant(
                         var conf: Double,
                         var speed: Double,
                         var timestamp: String
-                      )
+                      ){
+  def par_string(): String = {
+//    var str=""
+    //    逻辑
+    val str = this.timestamp+","+this.id+","+this.location.longitude.toString +","+this.location.latitude.toString+","+this.speed.toString+", , , , , "
+    str
+  }
+}
 
 object Participant {
   def apply(json: String): Participant = {
     JSON.parseObject[Participant](json, classOf[Participant])
   }
-  def par_string(): String = {
-    val str=""
-//    逻辑
-    str
-  }
+
 }
