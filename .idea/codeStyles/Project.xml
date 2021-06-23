@@ -4,6 +4,7 @@
       <option name="alwaysUsedImports">
         <array>
           <option value="hdpf.bean.Location" />
+          <option value="org.json4s.jackson.Serialization.write" />
         </array>
       </option>
       <option name="USE_SCALADOC2_FORMATTING" value="true" />

@@ -13,6 +13,7 @@ object GlobalConfigUtil {
   lazy val autoCommitIntervalMs: String = ConfigLoader.getString("auto.commit.interval.ms")
   lazy val autoOffsetReset: String = ConfigLoader.getString("auto.offset.reset")
   lazy val outputTopic: String = ConfigLoader.getString("output.topic")
+  lazy val jsonoutputTopic: String = ConfigLoader.getString("jsonout.topic")
 //  lazy val autoOffsetReset: String = ConfigLoader.getString("auto.offset.reset")
   //mysql 配置
   lazy val mysql_driver: String = ConfigLoader.getString("mysql_driver")
@@ -32,8 +33,8 @@ object GlobalConfigUtil {
   lazy val rabbitmqPort: Int = ConfigLoader.getInt("rabbitmq.port")
   lazy val rabbitmqVirtualHost: String = ConfigLoader.getString("rabbitmq.virtual.host")
   lazy val rabbitmqUserName: String = ConfigLoader.getString("rabbitmq.user.name")
-  lazy val rabbitmqPassword: String = ConfigLoader.getString(" rabbitmq.password")
-  lazy val rabbitmqQueueName: String = ConfigLoader.getString(" rabbitmq.queue.name")
+  lazy val rabbitmqPassword: String = ConfigLoader.getString("rabbitmq.password")
+  lazy val rabbitmqQueueName: String = ConfigLoader.getString("rabbitmq.queue.name")
 
 
   def main(args: Array[String]): Unit = {

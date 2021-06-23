@@ -69,6 +69,8 @@ object Entrance {
 
 
     val fileDS: DataStream[String] = parDS.map(_.par_string)
+    val fileJsonDS: DataStream[String] = parDS.map(_.json_string())
+    fileJsonDS.print("fileJsonDS")
     val sink: StreamingFileSink[String] = StreamingFileSink
       .forRowFormat(new Path("hdfs://cdh01:8020/hdpf/ods/table/date"), new SimpleStringEncoder[String]("UTF-8"))
       .withRollingPolicy(
@@ -80,17 +82,18 @@ object Entrance {
       .build()
     fileDS.print("haha")
     fileDS.addSink(sink)
-    fileDS.addSink(FlinkUtils.producerKafkaFlink())
+    fileDS.addSink(FlinkUtils.producerKafkaFlink(GlobalConfigUtil.outputTopic))
+    fileJsonDS.addSink(FlinkUtils.producerKafkaFlink(GlobalConfigUtil.jsonoutputTopic))
 
-//    val parWaterDS: DataStream[Participant] = parDS.assignTimestampsAndWatermarks(new ParticipantAssginerWaterMark)
-    //对于路口
-//    processRoadCross(parWaterDS,Constant.valueTuple1)
-//    processRoadCross(parWaterDS,Constant.valueTuple2)
-//    //对于道路 roadId=1
-//    processRoad(devTupleDS,parWaterDS,Constant.valueTuple3)
-//    //对于车道
-//    processLane(devTupleDS,parWaterDS,Constant.valueTuple4)
-//    processLane(devTupleDS,parWaterDS,Constant.valueTuple5)
+    val parWaterDS: DataStream[Participant] = parDS.assignTimestampsAndWatermarks(new ParticipantAssginerWaterMark)
+//    对于路口
+    processRoadCross(parWaterDS,Constant.valueTuple1)
+    processRoadCross(parWaterDS,Constant.valueTuple2)
+    //对于道路 roadId=1
+    processRoad(devTupleDS,parWaterDS,Constant.valueTuple3)
+    //对于车道
+    processLane(devTupleDS,parWaterDS,Constant.valueTuple4)
+    processLane(devTupleDS,parWaterDS,Constant.valueTuple5)
 
     // 执行任务
     env.execute(GlobalConfigUtil.jobName)

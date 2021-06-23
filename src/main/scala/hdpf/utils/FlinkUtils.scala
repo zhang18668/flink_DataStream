@@ -83,8 +83,29 @@ object FlinkUtils {
     consumer.setStartFromLatest()
     consumer
   }
+  def consumerKafkaFlink(topic: String) = {
+    // 整合Kafka
+    val props: Properties = new Properties()
 
-  def producerKafkaFlink() = {
+
+    props.setProperty("bootstrap.servers", GlobalConfigUtil.bootstrapServers)
+    props.setProperty("group.id", GlobalConfigUtil.groupId)
+    props.setProperty("enable.auto.commit", GlobalConfigUtil.enableAutoCommit)
+    props.setProperty("auto.commit.interval.ms", GlobalConfigUtil.autoCommitIntervalMs)
+    props.setProperty("auto.offset.reset", GlobalConfigUtil.autoOffsetReset)
+
+
+    // String topic, DeserializationSchema<T> valueDeserializer, Properties props
+    val consumer = new FlinkKafkaConsumer[String](
+      topic,
+      new SimpleStringSchema(),
+      props
+    )
+    //    consumer.setStartFromEarliest()
+    consumer.setStartFromLatest()
+    consumer
+  }
+  def producerKafkaFlink(topic: String) = {
     // 整合Kafka
     val props: Properties = new Properties()
 
@@ -93,11 +114,12 @@ object FlinkUtils {
 //    props.setProperty("group.id", GlobalConfigUtil.groupId)
 //    props.setProperty("enable.auto.commit", GlobalConfigUtil.enableAutoCommit)
 //    props.setProperty("auto.commit.interval.ms", GlobalConfigUtil.autoCommitIntervalMs)
+    props.setProperty("transaction.timeout.ms", GlobalConfigUtil.autoCommitIntervalMs)
 //    props.setProperty("auto.offset.reset", GlobalConfigUtil.autoOffsetReset)
 
     // String topic, DeserializationSchema<T> valueDeserializer, Properties props
     val producer  = new FlinkKafkaProducer[String](
-      GlobalConfigUtil.outputTopic,
+      topic,
       new SimpleStringSchema(),
       props
     )
@@ -114,12 +136,5 @@ object FlinkUtils {
       .setPassword(GlobalConfigUtil.rabbitmqPassword)
       .build
     connectionConfig
-    //    val stream = env
-    //      .addSource(new RMQSource[String](
-    //        connectionConfig,            // config for the RabbitMQ connection
-    //        "ord-obu-data-temp-zzh",                // name of the RabbitMQ queue to consume
-    //        false,                        // use correlation ids; can be false if only at-least-once is required
-    //        new SimpleStringSchema))     // deserialization schema to turn messages into Java objects
-    //      .setParallelism(1)               // non-parallel source is only required for exactly-once
   }
 }

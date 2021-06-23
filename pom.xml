@@ -118,13 +118,44 @@ under the License.
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.38</version>
 		</dependency>
-
+		<!-- https://mvnrepository.com/artifact/org.apache.flink/flink-sql-connector-kafka -->
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-sql-connector-kafka_2.12</artifactId>
+			<version>1.12.0</version>
+			<scope>provided</scope>
+		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.flink/flink-shaded-hadoop-2-uber -->
 		<dependency>
 			<groupId>org.apache.flink</groupId>
 			<artifactId>flink-shaded-hadoop-2-uber</artifactId>
 			<version>2.7.5-10.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.scalaj/scalaj-http -->
+		<dependency>
+			<groupId>org.scalaj</groupId>
+			<artifactId>scalaj-http_2.11</artifactId>
+			<version>2.4.1</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.20</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.json4s</groupId>
+			<artifactId>json4s-native_${scala.binary.version}</artifactId>
+			<version>4.0.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.json4s/json4s-jackson -->
+		<dependency>
+			<groupId>org.json4s</groupId>
+			<artifactId>json4s-jackson_2.11</artifactId>
+			<version>4.0.0</version>
 		</dependency>
 
 	</dependencies>
