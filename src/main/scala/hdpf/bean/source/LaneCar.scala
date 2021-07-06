@@ -23,7 +23,8 @@ case class LaneCar(
                     var Gy: Int,
                     var yaw: Int,
                     var lane_id: Long,
-                    var road_id: Long
+                    var road_id: Long,
+                    var delta_speed: Double
                   ) {
 
 }
@@ -31,7 +32,7 @@ case class LaneCar(
 object LaneCar {
   def main(args: Array[String]): Unit = {
     implicit val formats: AnyRef with Formats = Serialization.formats(NoTypeHints)
-    val car = new LaneCar(1, "2", 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
+    val car = new LaneCar(1, "2", 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,11.1)
     car.time = 2
     println(car)
     val hbaseStr = write(car)

@@ -1,11 +1,16 @@
 package hdpf.utils
 
 import java.util.Properties
+import java.util.concurrent.TimeUnit
 
 import hdpf.utils.ConfigLoader.propertiesName
 import org.apache.commons.lang3.SystemUtils
+import org.apache.flink.api.common.serialization.SimpleStringEncoder
+import org.apache.flink.core.fs.Path
 import org.apache.flink.runtime.state.filesystem.FsStateBackend
 import org.apache.flink.streaming.api.environment.CheckpointConfig
+import org.apache.flink.streaming.api.functions.sink.filesystem.StreamingFileSink
+import org.apache.flink.streaming.api.functions.sink.filesystem.rollingpolicies.DefaultRollingPolicy
 import org.apache.flink.streaming.api.{CheckpointingMode, TimeCharacteristic}
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 import org.apache.flink.streaming.connectors.kafka.{FlinkKafkaConsumer, FlinkKafkaProducer}
@@ -137,4 +142,19 @@ object FlinkUtils {
       .build
     connectionConfig
   }
+
+  def initFileSink(): StreamingFileSink[String] = {
+    // 整合mq
+    val sink: StreamingFileSink[String] = StreamingFileSink
+      .forRowFormat(new Path("hdfs://cdh01:8020/hdpf/ods/table/date"), new SimpleStringEncoder[String]("UTF-8"))
+      .withRollingPolicy(
+        DefaultRollingPolicy.builder()
+          .withRolloverInterval(TimeUnit.MINUTES.toMillis(1)) //10min 生成一个文件
+          .withInactivityInterval(TimeUnit.MINUTES.toMillis(1)) //5min未接收到数据，生成一个文件
+          .withMaxPartSize(1024 * 1024 * 1024) //文件大小达到1G
+          .build())
+      .build()
+    sink
+  }
+
 }

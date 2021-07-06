@@ -2,36 +2,33 @@ package hdpf.task
 
 import java.util.concurrent.TimeUnit
 
-import com.alibaba.fastjson.serializer.SerializerFeature
 import hdpf.bean.enity.Point
 import hdpf.bean.sink.{QueueLength, TrafficVolume}
-import hdpf.bean.source.{Device, Participant, Payload}
-import hdpf.constant.Constant
+import hdpf.bean.source.{Device, LaneCar, Participant, Payload}
 import hdpf.operator.fitter.IsInPloyin
-import hdpf.operator.map.{JOSNStringFunction, QueueLengthFunction}
+import hdpf.operator.map.{JOSNStringFunction, LaneCarFunction, QueueLengthFunction}
 import hdpf.operator.window.allWindow.{StopDelayAllWindowApply, StopNumAllWindowApply, TrafficVolumeAllWindowApply}
+import hdpf.operator.window.window.{SpeedWindowFunction, StopDelayWindowFunction}
 import hdpf.sink.{MySqlQueueLengthSink, StopDelayMysqlSink, StopNumMysqlSink, TrafficVolumeMySqlSink}
 import hdpf.utils.{FlinkUtils, GlobalConfigUtil}
-import hdpf.watermark.ParticipantAssginerWaterMark
 import org.apache.flink.api.common.serialization.SimpleStringEncoder
 import org.apache.flink.api.scala._
 import org.apache.flink.core.fs.Path
 import org.apache.flink.streaming.api.functions.sink.filesystem.StreamingFileSink
 import org.apache.flink.streaming.api.functions.sink.filesystem.rollingpolicies.DefaultRollingPolicy
 import org.apache.flink.streaming.api.scala.{AllWindowedStream, DataStream, WindowedStream}
-import org.apache.flink.streaming.api.windowing.assigners.SlidingEventTimeWindows
+import org.apache.flink.streaming.api.windowing.assigners.{SlidingEventTimeWindows, SlidingProcessingTimeWindows, WindowAssigner}
 import org.apache.flink.streaming.api.windowing.time.Time
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow
 import org.apache.flink.streaming.connectors.rabbitmq.RMQSource
 import org.apache.flink.streaming.util.serialization.SimpleStringSchema
-import org.slf4j.LoggerFactory
-import com.alibaba.fastjson.{JSON, JSONObject}
 import org.json4s.{Formats, NoTypeHints}
 import org.json4s.jackson.Serialization
 import org.json4s.jackson.Serialization.write
+import org.slf4j.LoggerFactory
 
 
-object App {
+object App_keyby {
   def main(args: Array[String]): Unit = {
     val hdpfLogger = LoggerFactory.getLogger("hdpf")
     //TODO 1. Flink流式环境的创建
@@ -71,50 +68,38 @@ object App {
     //    加一个逻辑，写入到hdpf/ods/table/date
 
 
-    val fileDS: DataStream[String] = parDS.map(_.par_string())
-    val fileJsonDS: DataStream[String] = parDS.map(new JOSNStringFunction)
-    fileJsonDS.print("fileJsonDS")
-    val sink: StreamingFileSink[String] = StreamingFileSink
-      .forRowFormat(new Path("hdfs://cdh01:8020/hdpf/ods/table/date"), new SimpleStringEncoder[String]("UTF-8"))
-      .withRollingPolicy(
-        DefaultRollingPolicy.builder()
-          .withRolloverInterval(TimeUnit.MINUTES.toMillis(1)) //10min 生成一个文件
-          .withInactivityInterval(TimeUnit.MINUTES.toMillis(1)) //5min未接收到数据，生成一个文件
-          .withMaxPartSize(1024 * 1024 * 1024) //文件大小达到1G
-          .build())
-      .build()
-    fileDS.print("haha")
-    fileDS.addSink(sink)
-    fileDS.addSink(FlinkUtils.producerKafkaFlink(GlobalConfigUtil.outputTopic))
-    fileJsonDS.addSink(FlinkUtils.producerKafkaFlink(GlobalConfigUtil.jsonoutputTopic))
+//    val fileDS: DataStream[String] = parDS.map(_.par_string())
+//    val fileJsonDS: DataStream[String] = parDS.map(new JOSNStringFunction)
+//    fileJsonDS.print("fileJsonDS")
+//    fileDS.addSink(FlinkUtils.initFileSink())
+//    fileDS.addSink(FlinkUtils.producerKafkaFlink(GlobalConfigUtil.outputTopic))
+//    fileJsonDS.addSink(FlinkUtils.producerKafkaFlink(GlobalConfigUtil.jsonoutputTopic))
 
 
+    val laneCarDS: DataStream[LaneCar] = parDS.map(new LaneCarFunction)
+    val laneCarSpeedDS: DataStream[LaneCar] = laneCarDS.keyBy(_.lane_id).window(SlidingProcessingTimeWindows.of(Time.seconds(10), Time.seconds(5))).apply(new SpeedWindowFunction())
+    implicit val formats: AnyRef with Formats = Serialization.formats(NoTypeHints)
+
+    val laneCarSpeedJsonDS = laneCarSpeedDS.map(write(_))
+    laneCarSpeedJsonDS.addSink(FlinkUtils.producerKafkaFlink(GlobalConfigUtil.jsonoutputTopic))
+
+    //根据车道号计算停车延迟
+    val laneidStopDelayDS = laneCarDS.keyBy(_.lane_id).window(SlidingProcessingTimeWindows.of(Time.seconds(10), Time.seconds(5))).apply(new StopDelayWindowFunction())
+    laneidStopDelayDS.print("laneidStopDelayDS")
+    laneidStopDelayDS.addSink(new StopDelayMysqlSink)
+
+    //    根据道路计算停车延迟
+
+    val roadidStopDelayDS = laneCarDS.keyBy(_.road_id).window(SlidingProcessingTimeWindows.of(Time.seconds(10), Time.seconds(5))).apply(new StopDelayWindowFunction())
+    roadidStopDelayDS.print("laneidStopDelayDS")
+    roadidStopDelayDS.addSink(new StopDelayMysqlSink)
+
+    //    根据道路
 
     // 执行任务
     env.execute(GlobalConfigUtil.jobName)
 
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
   def processRoad(devTupleDS: DataStream[(Device, String)], parWaterDS: DataStream[Participant], value: (List[Point], Int, Int)): Unit = {
@@ -127,8 +112,6 @@ object App {
     queueLenDS.addSink(new MySqlQueueLengthSink)
     //    交通流指标数据过滤
     val ptsDS: DataStream[Participant] = parWaterDS.filter(new IsInPloyin(value._1))
-    val valueDS: WindowedStream[Participant, String, TimeWindow] = ptsDS.keyBy(_.id).window(SlidingEventTimeWindows.of(Time.seconds(GlobalConfigUtil.windowDuration), Time.seconds(GlobalConfigUtil.windowTimeStep)))
-    val value1DS: AllWindowedStream[Participant, TimeWindow] = ptsDS.windowAll(SlidingEventTimeWindows.of(Time.seconds(GlobalConfigUtil.windowDuration), Time.seconds(GlobalConfigUtil.windowTimeStep)))
     //停车延迟指标计算
     val stopDelayDS = ptsDS.windowAll(SlidingEventTimeWindows.of(Time.seconds(GlobalConfigUtil.windowDuration), Time.seconds(GlobalConfigUtil.windowTimeStep))).apply(new StopDelayAllWindowApply)
     stopDelayDS.addSink(new StopDelayMysqlSink)

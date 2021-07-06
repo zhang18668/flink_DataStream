@@ -21,14 +21,17 @@ class JOSNStringFunction() extends MapFunction[Participant, String] {
     val Gx = 0
     val Gy = 0
     val yaw = 0
-    val url = "http://127.0.0.1:5000/lane?longitude=%1$s&latitude=%2$s".format(longitude.toString, latitude.toString)
+//    val url = "http://127.0.0.1:5000/lane?longitude=%1$s&latitude=%2$s".format(longitude.toString, latitude.toString)
 //    val lanestr: String = Http_flask.get(url)
-//    val lanesplit = lanestr.split(",")
+//    println(lanestr)
+//    val lanesplit: Array[String] = lanestr.split(",")
+//    println(lanesplit(0))
 //    val lane_id = lanesplit(0).toInt
 //    val road_id = lanesplit(1).toInt
     val lane_id = 0
     val road_id = 0
-    val car = new LaneCar(time, id, longitude, latitude, speed, hdq, pitch, Gx, Gy, yaw, lane_id, road_id)
+    val delta_speed=0
+    val car = new LaneCar(time, id, longitude, latitude, speed, hdq, pitch, Gx, Gy, yaw, lane_id, road_id,delta_speed )
     implicit val formats: AnyRef with Formats = Serialization.formats(NoTypeHints)
 
     write(car)
