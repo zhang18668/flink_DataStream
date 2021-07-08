@@ -160,6 +160,12 @@
       <version>2.12.1</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.flink</groupId>
+      <artifactId>flink-sql-connector-kafka_2.12</artifactId>
+      <version>1.12.0</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
   <properties>
     <scala.version>2.11.12</scala.version>

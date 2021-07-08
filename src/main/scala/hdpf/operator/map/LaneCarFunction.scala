@@ -11,8 +11,8 @@ class LaneCarFunction() extends MapFunction[Participant, LaneCar] {
   override def map(par: Participant): LaneCar = {
     val time = par.timestamp.toLong
     val id = par.id
-    val longitude = par.location.longitude
-    val latitude = par.location.latitude
+    val longitude = par.location.longitude*10000000
+    val latitude = par.location.latitude*10000000
     val speed = par.speed
     val hdq = par.arctan.hdq
     val pitch = par.arctan.pitch

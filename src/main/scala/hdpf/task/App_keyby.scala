@@ -6,7 +6,7 @@ import hdpf.bean.enity.Point
 import hdpf.bean.sink.{QueueLength, TrafficVolume}
 import hdpf.bean.source.{Device, LaneCar, Participant, Payload}
 import hdpf.operator.fitter.IsInPloyin
-import hdpf.operator.map.{JOSNStringFunction, LaneCarFunction, QueueLengthFunction}
+import hdpf.operator.map.{JOSNFunction, JOSNStringFunction, LaneCarFunction, QueueLengthFunction}
 import hdpf.operator.window.allWindow.{StopDelayAllWindowApply, StopNumAllWindowApply, TrafficVolumeAllWindowApply}
 import hdpf.operator.window.window.{SpeedWindowFunction, StopDelayWindowFunction}
 import hdpf.sink.{MySqlQueueLengthSink, StopDelayMysqlSink, StopNumMysqlSink, TrafficVolumeMySqlSink}
@@ -27,6 +27,8 @@ import org.json4s.jackson.Serialization
 import org.json4s.jackson.Serialization.write
 import org.slf4j.LoggerFactory
 
+import scala.collection.mutable.ListBuffer
+
 
 object App_keyby {
   def main(args: Array[String]): Unit = {
@@ -39,7 +41,7 @@ object App_keyby {
 
     val stream = env.addSource(new RMQSource[String](connectionConfig, GlobalConfigUtil.rabbitmqQueueName, false, new SimpleStringSchema)).setParallelism(1)
 
-    stream.print("原始")
+//    stream.print("原始")
     //TODO 以下后期会转化
     //将原始数据转化为 Payload  对象 并过滤脏数据
     val canalDs = stream.map {
@@ -77,12 +79,12 @@ object App_keyby {
 
 
     val laneCarDS: DataStream[LaneCar] = parDS.map(new LaneCarFunction)
-    val laneCarSpeedDS: DataStream[LaneCar] = laneCarDS.keyBy(_.lane_id).window(SlidingProcessingTimeWindows.of(Time.seconds(10), Time.seconds(5))).apply(new SpeedWindowFunction())
-    implicit val formats: AnyRef with Formats = Serialization.formats(NoTypeHints)
+    val laneCarSpeedDS: DataStream[ListBuffer[LaneCar]] = laneCarDS.keyBy(_.lane_id).window(SlidingProcessingTimeWindows.of(Time.seconds(10), Time.seconds(5))).apply(new SpeedWindowFunction())
 
-    val laneCarSpeedJsonDS = laneCarSpeedDS.map(write(_))
+    val laneCarSpeedJsonDS: DataStream[String] = laneCarSpeedDS.flatMap(x=>x).map(new JOSNFunction())
+    laneCarSpeedJsonDS.print("laneCarSpeedJsonDS")
     laneCarSpeedJsonDS.addSink(FlinkUtils.producerKafkaFlink(GlobalConfigUtil.jsonoutputTopic))
-
+/***
     //根据车道号计算停车延迟
     val laneidStopDelayDS = laneCarDS.keyBy(_.lane_id).window(SlidingProcessingTimeWindows.of(Time.seconds(10), Time.seconds(5))).apply(new StopDelayWindowFunction())
     laneidStopDelayDS.print("laneidStopDelayDS")
@@ -95,7 +97,7 @@ object App_keyby {
     roadidStopDelayDS.addSink(new StopDelayMysqlSink)
 
     //    根据道路
-
+***/
     // 执行任务
     env.execute(GlobalConfigUtil.jobName)
 
